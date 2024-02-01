@@ -3,7 +3,7 @@ name: StoreScreenshot
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
 
 permissions: {}
@@ -26,6 +26,9 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
 
       # Better than caching and/or extensions of actions/setup-java
       - name: Setup Gradle
