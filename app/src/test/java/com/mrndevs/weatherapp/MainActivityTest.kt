@@ -21,7 +21,7 @@ class MainActivityTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    val directoryName = "MainActivityTest"
+    val directoryName = "MainActivityRoboTest"
 
     @Test
     fun testWeatherApp() {
