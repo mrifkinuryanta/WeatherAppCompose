@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 
@@ -23,6 +24,7 @@ class MainActivityTest {
 
     val directoryName = "MainActivityRoboTest"
 
+    @OptIn(ExperimentalRoborazziApi::class)
     @Test
     fun testWeatherApp() {
 
