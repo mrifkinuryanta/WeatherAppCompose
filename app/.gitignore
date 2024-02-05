@@ -1,7 +1,1 @@
-/build/generated
-/build/intermediates
-/build/kotlin
-/build/tmp
-/build/snapshot
-/build/reports
-/build/test-results
+/build

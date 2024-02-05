@@ -43,7 +43,6 @@ class MainActivityTest {
         }
 
         composeTestRule.onRoot().captureRoboImage(
-            filePath = "src/test/screenshots/$directoryName/greeting.png",
             roborazziOptions = RoborazziOptions(
                 recordOptions =
                 RoborazziOptions.RecordOptions(resizeScale = 0.5)
