@@ -31,7 +31,7 @@ fun WeatherScreen() {
             .background(
                 Brush.linearGradient(backgroundLightGradient)
             )
-            .padding(horizontal = 35.dp)
+            .padding(horizontal = 30.dp)
     ) {
         WeatherHeader(cities = "Indonesia", onSelectCities = { showCitiesBottomSheet = true })
 
