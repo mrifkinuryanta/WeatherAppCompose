@@ -9,6 +9,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.mrndevs.weatherapp.ui.screen.weather.WeatherScreen
+import com.mrndevs.weatherapp.ui.theme.WeatherAppTheme
 
 import org.junit.Rule
 import org.junit.Test
@@ -29,10 +31,14 @@ class MainActivityTest {
     @Test
     fun testWeatherApp() {
 
-        ActivityScenario.launch(MainActivity::class.java)
+        composeTestRule.setContent {
+            WeatherAppTheme {
+                WeatherScreen()
+            }
+        }
 
         composeTestRule.onRoot().captureRoboImage(
-            filePath = "src/test/screenshots/$directoryName/greeting.png",
+            filePath = "src/test/screenshots/$directoryName/weatherApp.png",
             roborazziOptions = RoborazziOptions(
                 recordOptions =
                 RoborazziOptions.RecordOptions(resizeScale = 0.5)
