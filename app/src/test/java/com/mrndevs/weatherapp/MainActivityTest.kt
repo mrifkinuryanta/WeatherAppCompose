@@ -4,6 +4,7 @@ package com.mrndevs.weatherapp
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
@@ -22,11 +23,13 @@ class MainActivityTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    val directoryName = "MainActivityRoboTest"
+    val directoryName = "MainActivityTest"
 
     @OptIn(ExperimentalRoborazziApi::class)
     @Test
     fun testWeatherApp() {
+
+        ActivityScenario.launch(MainActivity::class.java)
 
         composeTestRule.onRoot().captureRoboImage(
             filePath = "src/test/screenshots/$directoryName/greeting.png",
