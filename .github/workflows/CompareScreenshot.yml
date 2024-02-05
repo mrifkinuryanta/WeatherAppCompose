@@ -1,4 +1,4 @@
-name: StoreScreenshot
+name: CompareScreenshot
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 permissions: {}
 
 jobs:
-  store-screenshot-test:
+  compare-screenshot-test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -27,25 +27,28 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Make Gradle executable
-        run: chmod +x ./gradlew
-
-      # Better than caching and/or extensions of actions/setup-java
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@982da8e78c05368c70dac0351bb82647a9e9a5d2 # v2.11.1
+        uses: gradle/gradle-build-action@3b1b3b9a2104c2b47fbae53f3938079c00c9bb87 # v3.0.0
         with:
           gradle-version: wrapper
 
-      - name: record screenshot
-        id: record-test
+
+      - uses: dawidd6/action-download-artifact@v2
+        continue-on-error: true
+        with:
+          name: screenshot
+          workflow: StoreScreenshot.yml
+          branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || github.event.repository.default_branch }}
+
+      - name: compare screenshot test
+        id: compare-screenshot-test
         run: |
-          # Use --rerun-tasks to disable cache for test task
-          ./gradlew recordRoborazziDebug --stacktrace --rerun-tasks
+          ./gradlew compareRoborazziDebug --stacktrace
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: screenshot
+          name: screenshot-diff
           path: |
             **/build/outputs/roborazzi
           retention-days: 30
@@ -53,7 +56,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: screenshot-reports
+          name: screenshot-diff-reports
           path: |
             **/build/reports
           retention-days: 30
@@ -61,7 +64,17 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: screenshot-test-results
+          name: screenshot-diff-test-results
           path: |
             **/build/test-results
           retention-days: 30
+
+      - name: Save PR number
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          mkdir -p ./pr
+          echo ${{ github.event.number }} > ./pr/NR
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pr
+          path: pr/
