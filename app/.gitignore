@@ -3,3 +3,5 @@
 /build/kotlin
 /build/tmp
 /build/snapshot
+/build/reports
+/build/test-results
