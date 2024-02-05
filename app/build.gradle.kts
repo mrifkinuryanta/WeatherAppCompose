@@ -56,6 +56,10 @@ android {
     }
 }
 
+roborazzi {
+    outputDir = file("build/outputs/roborazzi")
+}
+
 dependencies {
 
     implementation("androidx.compose.material:material-icons-extended:1.6.0")
