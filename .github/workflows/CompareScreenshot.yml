@@ -27,7 +27,7 @@ jobs:
           distribution: temurin
           java-version: 17
 
-        - name: Make Gradle executable
+      - name: Make Gradle executable
         run: chmod +x ./gradlew
 
       - name: Setup Gradle
