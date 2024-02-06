@@ -40,7 +40,7 @@ class MainActivityTest {
         composeTestRule.onRoot().captureRoboImage(
             roborazziOptions = RoborazziOptions(
                 recordOptions =
-                RoborazziOptions.RecordOptions(resizeScale = 0.0)
+                RoborazziOptions.RecordOptions(resizeScale = 0.1)
             )
         )
     }
