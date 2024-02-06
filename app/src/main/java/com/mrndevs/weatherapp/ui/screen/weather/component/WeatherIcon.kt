@@ -1,5 +1,6 @@
 package com.mrndevs.weatherapp.ui.screen.weather.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -16,5 +17,17 @@ fun WeatherIcon(painterRes: Int, size: Dp = 24.dp) {
         contentDescription = null,
         tint = Color.White,
         modifier = Modifier.size(size)
+    )
+}
+
+@Composable
+fun WeatherIcon(painterRes: Int, size: Dp = 24.dp, onClick: (() -> Unit)? = null) {
+    Icon(
+        painter = painterResource(painterRes),
+        contentDescription = null,
+        tint = Color.White,
+        modifier = Modifier
+            .size(size)
+            .clickable { onClick?.invoke() }
     )
 }

@@ -18,7 +18,7 @@ import com.mrndevs.weatherapp.R
 import com.mrndevs.weatherapp.ui.theme.SP18
 
 @Composable
-fun WeatherHeader(cities: String, onSelectCities: () -> Unit) {
+fun WeatherHeader(cities: String, onSelectCities: () -> Unit, onClickNotification: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,6 +39,10 @@ fun WeatherHeader(cities: String, onSelectCities: () -> Unit) {
             WeatherIcon(painterRes = R.drawable.ic_arrow_down_24)
         }
         Spacer(modifier = Modifier.weight(1f))
-        WeatherIcon(painterRes = R.drawable.ic_notification_line_24, size = 27.dp)
+        WeatherIcon(
+            painterRes = R.drawable.ic_notification_line_24,
+            size = 27.dp,
+            onClick = onClickNotification
+        )
     }
 }

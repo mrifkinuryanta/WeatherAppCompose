@@ -49,7 +49,7 @@ fun SearchFieldWithIndicator(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchFieldWithIndicatorContent(
     interactionSource: MutableInteractionSource,

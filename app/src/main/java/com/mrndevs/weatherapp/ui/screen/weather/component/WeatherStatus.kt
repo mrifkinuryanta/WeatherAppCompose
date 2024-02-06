@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,10 +28,9 @@ import com.mrndevs.weatherapp.ui.theme.SP20
 import com.mrndevs.weatherapp.ui.theme.W600
 import com.mrndevs.weatherapp.ui.theme.W700
 import com.mrndevs.weatherapp.ui.theme.grey
-import com.mrndevs.weatherapp.ui.theme.onBackgroundLight
 
 @Composable
-fun WeatherStatus() {
+fun WeatherStatus(containerColor: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         WeatherImage(
             image = "",
@@ -52,10 +53,10 @@ fun WeatherStatus() {
                 append("25°")
             }
         })
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         Card(
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = onBackgroundLight)
+            colors = CardDefaults.cardColors(containerColor = containerColor)
         ) {
             Row(
                 modifier = Modifier
@@ -78,7 +79,7 @@ private fun ItemStatus(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         WeatherIcon(painterRes = painterRes)
-        Spacer(modifier = Modifier.size(4.dp))
+        Spacer(modifier = Modifier.width(4.dp))
         Text(text = text, style = SP14.W700, color = Color.White)
     }
 }

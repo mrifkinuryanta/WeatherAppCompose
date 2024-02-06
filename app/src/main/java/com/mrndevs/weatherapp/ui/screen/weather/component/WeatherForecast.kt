@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -22,19 +23,20 @@ import com.mrndevs.weatherapp.ui.theme.SP20
 import com.mrndevs.weatherapp.ui.theme.W600
 import com.mrndevs.weatherapp.ui.theme.W700
 import com.mrndevs.weatherapp.ui.theme.grey
-import com.mrndevs.weatherapp.ui.theme.onBackgroundLight
 
 @Composable
-fun WeatherForecast() {
+fun WeatherForecast(containerColor: Color) {
+    val height = 16.dp
     Card(
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = onBackgroundLight)
+        colors = CardDefaults.cardColors(containerColor = containerColor)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 18.dp)
         ) {
+            Spacer(modifier = Modifier.height(height))
             Row {
                 Text(
                     text = "Next Forecast",
@@ -44,9 +46,10 @@ fun WeatherForecast() {
                 Spacer(modifier = Modifier.weight(1f))
                 WeatherIcon(painterRes = R.drawable.ic_calendar_event_line_24)
             }
-            Spacer(modifier = Modifier.size(12.dp))
+            Spacer(modifier = Modifier.height(height))
             repeat(3) {
                 ItemForecast()
+                Spacer(modifier = Modifier.height(height))
             }
         }
     }
@@ -55,9 +58,7 @@ fun WeatherForecast() {
 @Composable
 private fun ItemForecast() {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -65,7 +66,7 @@ private fun ItemForecast() {
         WeatherImage(image = "")
         Row {
             Text(text = "13°C", style = SP18, color = Color.White)
-            Spacer(modifier = Modifier.size(10.dp))
+            Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = "10°C",
                 style = SP18,
