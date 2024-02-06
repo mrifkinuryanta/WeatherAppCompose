@@ -12,7 +12,9 @@ import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.mrndevs.weatherapp.ui.screen.weather.WeatherScreen
+import com.mrndevs.weatherapp.ui.screen.weather.component.WeatherStatus
 import com.mrndevs.weatherapp.ui.theme.WeatherAppTheme
+import com.mrndevs.weatherapp.ui.theme.onBackgroundLight
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,9 +35,10 @@ class MainActivityTest {
     fun testWeatherApp() {
         composeTestRule.setContent {
             WeatherAppTheme {
-                WeatherScreen()
+                WeatherStatus(onBackgroundLight)
             }
         }
+
         println(composeTestRule.onRoot().printToString())
         composeTestRule.onRoot().captureRoboImage()
     }
