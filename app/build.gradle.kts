@@ -62,6 +62,8 @@ roborazzi {
 
 dependencies {
 
+    implementation("com.github.mik3y:usb-serial-for-android:3.7.0")
+    implementation("com.tagsamurai.tscomponents:libs:1.0.0")
     implementation("androidx.compose.material:material-icons-extended:1.6.0")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
@@ -76,6 +78,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     implementation("org.robolectric:annotations:4.11.1")
+    implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

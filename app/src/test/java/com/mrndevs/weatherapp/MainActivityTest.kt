@@ -6,10 +6,9 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToString
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.mrndevs.weatherapp.ui.screen.weather.WeatherScreen
+import com.mrndevs.weatherapp.ui.screen.test.TaskScreen
 import com.mrndevs.weatherapp.ui.theme.WeatherAppTheme
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +29,7 @@ class MainActivityTest {
     fun testWeatherApp() {
         composeTestRule.setContent {
             WeatherAppTheme {
-                WeatherScreen()
+                TaskScreen(tasks = getDummyListTask()) {}
             }
         }
 
