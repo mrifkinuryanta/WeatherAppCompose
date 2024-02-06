@@ -3,19 +3,15 @@ package com.mrndevs.weatherapp
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToString
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
+import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.mrndevs.weatherapp.ui.screen.weather.WeatherScreen
-import com.mrndevs.weatherapp.ui.screen.weather.component.WeatherStatus
 import com.mrndevs.weatherapp.ui.theme.WeatherAppTheme
-import com.mrndevs.weatherapp.ui.theme.onBackgroundLight
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,15 +27,21 @@ class MainActivityTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
+    @OptIn(ExperimentalRoborazziApi::class)
     @Test
     fun testWeatherApp() {
         composeTestRule.setContent {
             WeatherAppTheme {
-                WeatherStatus(onBackgroundLight)
+                WeatherScreen()
             }
         }
 
         println(composeTestRule.onRoot().printToString())
-        composeTestRule.onRoot().captureRoboImage()
+        composeTestRule.onRoot().captureRoboImage(
+            roborazziOptions = RoborazziOptions(
+                recordOptions =
+                RoborazziOptions.RecordOptions(resizeScale = 0.5)
+            )
+        )
     }
 }

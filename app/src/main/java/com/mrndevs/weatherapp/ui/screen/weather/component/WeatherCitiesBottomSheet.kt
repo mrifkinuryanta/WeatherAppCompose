@@ -33,7 +33,7 @@ fun WeatherCitiesBottomSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var query by remember { mutableStateOf("") }
 
-    LaunchedEffect(isShowSheet) {
+    LaunchedEffect(Unit) {
         if (isShowSheet) {
             sheetState.show()
         } else {

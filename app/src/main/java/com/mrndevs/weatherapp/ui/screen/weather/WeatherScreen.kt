@@ -71,10 +71,10 @@ fun WeatherScreen() {
             }
         }
 
-        WeatherCitiesBottomSheet(
+        /*WeatherCitiesBottomSheet(
             onDismissRequest = { showCitiesBottomSheet = false },
             isShowSheet = showCitiesBottomSheet,
             isDarkTheme = isDarkTheme
-        )
+        )*/
     }
 }
