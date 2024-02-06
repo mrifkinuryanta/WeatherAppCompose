@@ -8,7 +8,6 @@ import androidx.compose.ui.test.printToString
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
-import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.mrndevs.weatherapp.ui.screen.weather.WeatherScreen
 import com.mrndevs.weatherapp.ui.theme.WeatherAppTheme
@@ -27,7 +26,6 @@ class MainActivityTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    @OptIn(ExperimentalRoborazziApi::class)
     @Test
     fun testWeatherApp() {
         composeTestRule.setContent {
@@ -37,11 +35,6 @@ class MainActivityTest {
         }
 
         println(composeTestRule.onRoot().printToString())
-        composeTestRule.onRoot().captureRoboImage(
-            roborazziOptions = RoborazziOptions(
-                recordOptions =
-                RoborazziOptions.RecordOptions(resizeScale = 0.3)
-            )
-        )
+        composeTestRule.onRoot().captureRoboImage()
     }
 }
