@@ -1,6 +1,12 @@
 pluginManagement {
     repositories {
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
         gradlePluginPortal()
     }
@@ -10,15 +16,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
-        maven {
-            name = "bytesafe"
-            url = uri("https://mobts.bytesafe.dev/maven/mobts/")
-            credentials {
-                username = "bytesafe"
-                password = "01HK454G1BEQTQJGY7Z47725AA"
-            }
-        }
     }
 }
 
