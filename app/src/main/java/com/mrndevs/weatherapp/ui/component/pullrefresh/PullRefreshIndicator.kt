@@ -1,4 +1,4 @@
-package com.tagsamurai.tscomponents.pullrefresh
+package com.mrndevs.weatherapp.ui.component.pullrefresh
 
 // https://issuetracker.google.com/issues/261760718
 
@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
@@ -49,7 +50,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.mrndevs.weatherapp.ui.theme.tertiary
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -67,7 +67,7 @@ import kotlin.math.pow
  * @param contentColor The color of the indicator's arc and arrow.
  * @param scale A boolean controlling whether the indicator's size scales with pull progress or not.
  */
-// TODO(b/244423199): Consider whether the state parameter should be replaced with lambdas to
+// (b/244423199): Consider whether the state parameter should be replaced with lambdas to
 //  enable people to use this indicator with custom pull-to-refresh components.
 @Composable
 fun PullRefreshIndicator(
@@ -75,7 +75,7 @@ fun PullRefreshIndicator(
     state: PullRefreshState,
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color.White,
-    contentColor: Color = tertiary,
+    contentColor: Color = MaterialTheme.colorScheme.background,
     scale: Boolean = false
 ) {
     val showElevation by remember(refreshing, state) {

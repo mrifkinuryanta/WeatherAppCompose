@@ -1,80 +1,113 @@
 package com.mrndevs.weatherapp.ui.screen.weather
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.mrndevs.weatherapp.ui.screen.weather.component.WeatherCitiesBottomSheet
-import com.mrndevs.weatherapp.ui.screen.weather.component.WeatherForecast
-import com.mrndevs.weatherapp.ui.screen.weather.component.WeatherHeader
-import com.mrndevs.weatherapp.ui.screen.weather.component.WeatherStatus
-import com.mrndevs.weatherapp.ui.screen.weather.component.WeatherToday
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mrndevs.weatherapp.ui.component.pullrefresh.PullRefresh
+import com.mrndevs.weatherapp.ui.screen.weather.component.WeatherLocationBottomSheet
+import com.mrndevs.weatherapp.ui.screen.weather.model.WeatherScreenCallback
+import com.mrndevs.weatherapp.ui.screen.weather.view.WeatherAppBar
+import com.mrndevs.weatherapp.ui.screen.weather.view.WeatherForecast
+import com.mrndevs.weatherapp.ui.screen.weather.view.WeatherHeader
+import com.mrndevs.weatherapp.ui.screen.weather.view.WeatherStatus
+import com.mrndevs.weatherapp.ui.screen.weather.view.WeatherToday
+import com.mrndevs.weatherapp.ui.theme.backgroundDarkGradient
 import com.mrndevs.weatherapp.ui.theme.backgroundLightGradient
-import com.mrndevs.weatherapp.ui.theme.backgroundNightGradient
-import com.mrndevs.weatherapp.ui.theme.onBackgroundLight
-import com.mrndevs.weatherapp.ui.theme.onBackgroundNight
-import com.tagsamurai.tscomponents.pullrefresh.PullRefresh
+import com.mrndevs.weatherapp.util.Constant
 
 @Composable
-fun WeatherScreen() {
-    var showCitiesBottomSheet by remember { mutableStateOf(false) }
-    var isDarkTheme by remember { mutableStateOf(false) }
+fun WeatherScreen(
+    viewModel: WeatherViewModel = hiltViewModel(),
+    onNavigateToSetting: () -> Unit
+) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    val gradient: Brush
-    val containerColor: Color
-    if (isDarkTheme) {
-        gradient = Brush.linearGradient(backgroundNightGradient)
-        containerColor = onBackgroundNight
+    val screenCallback = WeatherScreenCallback(
+        onNavigateToSetting = onNavigateToSetting,
+        onSearch = viewModel::updateSearchQuery,
+        onGetWeather = viewModel::getWeather,
+        onResetSearchData = viewModel::resetSearchData,
+        onShowLocationSheet = viewModel::showLocationSheet
+    )
+
+    LaunchedEffect(Unit) {
+        viewModel.init()
+    }
+
+    WeatherScreen(
+        uiState = uiState.value,
+        screenCallback = screenCallback
+    )
+}
+
+@Composable
+fun WeatherScreen(
+    uiState: WeatherUiState,
+    screenCallback: WeatherScreenCallback
+) {
+    val isDarkTheme = isSystemInDarkTheme()
+    val spacing = Constant.DEFAULT_SPACING.dp
+
+    val gradient: Brush = if (isDarkTheme) {
+        Brush.linearGradient(backgroundDarkGradient)
     } else {
-        gradient = Brush.linearGradient(backgroundLightGradient)
-        containerColor = onBackgroundLight
+        Brush.linearGradient(backgroundLightGradient)
     }
 
     Column(
-        Modifier
+        modifier = Modifier
             .background(gradient)
-            .padding(horizontal = 30.dp)
+            .navigationBarsPadding()
     ) {
-        WeatherHeader(
-            cities = "Indonesia",
-            onSelectCities = { showCitiesBottomSheet = true },
-            onClickNotification = { isDarkTheme = !isDarkTheme }
+        WeatherAppBar(
+            modifier = Modifier.padding(horizontal = 18.dp),
+            location = uiState.location.name,
+            onSelectLocation = { screenCallback.onShowLocationSheet(true) },
+            onClickSetting = screenCallback.onNavigateToSetting
         )
 
-        PullRefresh(onRefresh = { /*TODO*/ }) {
+        PullRefresh(onRefresh = {}) {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                contentPadding = PaddingValues(bottom = 18.dp)
+                verticalArrangement = Arrangement.spacedBy(spacing),
+                contentPadding = PaddingValues(18.dp)
             ) {
                 item {
-                    WeatherStatus(containerColor)
+                    WeatherHeader(uiState = uiState)
                 }
 
                 item {
-                    WeatherToday(containerColor, isDarkTheme)
+                    WeatherToday(uiState = uiState)
                 }
 
                 item {
-                    WeatherForecast(containerColor)
+                    WeatherStatus(uiState = uiState)
+                }
+
+                item {
+                    WeatherForecast(uiState = uiState)
                 }
             }
         }
 
-        /*WeatherCitiesBottomSheet(
-            onDismissRequest = { showCitiesBottomSheet = false },
-            isShowSheet = showCitiesBottomSheet,
-            isDarkTheme = isDarkTheme
-        )*/
+        WeatherLocationBottomSheet(
+            onDismissRequest = { state -> screenCallback.onShowLocationSheet(state) },
+            uiState = uiState,
+            isShowSheet = uiState.isShowLocationSheet,
+            onSearch = screenCallback.onSearch,
+            onClick = screenCallback.onGetWeather,
+            onResetSearchData = screenCallback.onResetSearchData
+        )
     }
 }

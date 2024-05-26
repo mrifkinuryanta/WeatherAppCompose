@@ -1,4 +1,4 @@
-package com.tagsamurai.tscomponents.pullrefresh
+package com.mrndevs.weatherapp.ui.component.pullrefresh
 
 // https://issuetracker.google.com/issues/261760718
 

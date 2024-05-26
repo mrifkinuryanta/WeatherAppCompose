@@ -1,5 +1,18 @@
 <resources>
     <string name="app_name">Weather App</string>
-    <string name="text_placeholder_search">Search</string>
-    <string name="text_placeholder_clear_text">Clear</string>
+    <string name="title_today">Today</string>
+    <string name="title_uv">UV</string>
+    <string name="title_real_feel">Real Feel</string>
+    <string name="title_wind">Wind</string>
+    <string name="title_pressure">Pressure</string>
+    <string name="title_next_forecast">Next Forecast</string>
+    <string name="placeholder_search">Search</string>
+    <string name="placeholder_clear_text">Clear</string>
+    <string name="placeholder_back_button">Back</string>
+    <string name="placeholder_hpa">%1$s hPa</string>
+    <string name="placeholder_cloud">%1$d%%</string>
+    <string name="placeholder_humidity">%1$d%%</string>
+    <string name="placeholder_wind">%1$d km/h</string>
+    <string name="placeholder_min_max_temp">~</string>
+    <string name="title_now">Now</string>
 </resources>

@@ -1,7 +1,10 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("io.github.takahirom.roborazzi")
+    id("com.google.dagger.hilt.android")
+    id("kotlin-kapt")
 }
 
 android {
@@ -19,6 +22,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "API_KEY", getApiKey())
     }
 
     buildTypes {
@@ -39,9 +44,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.9"
     }
     packaging {
         resources {
@@ -56,43 +62,62 @@ android {
     }
 }
 
-roborazzi {
-    outputDir = file("build/outputs/roborazzi")
-}
-
 dependencies {
 
-    implementation("com.github.mik3y:usb-serial-for-android:3.7.0")
-    implementation("com.tagsamurai.tscomponents:libs:1.0.0")
-    implementation("androidx.compose.material:material-icons-extended:1.6.0")
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.activity)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.windowsizeclass)
+    implementation(libs.androidx.navigation)
+    implementation(libs.kotlinx.collections)
 
     // Coil
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation(libs.coil)
 
-    implementation("org.robolectric:annotations:4.11.1")
-    implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
+    // Data Store
+    implementation(libs.datastore.preferences)
+    implementation(libs.datastore.preferences.rxjava2)
+    implementation(libs.datastore.preferences.rxjava3)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
 
     // Compose Testing
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    testImplementation("androidx.compose.ui:ui-test-junit4-android")
-    testImplementation("org.robolectric:robolectric:4.11.1")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.9.0")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.9.0")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.9.0")
-    testImplementation("androidx.test.ext:junit-ktx:1.1.5")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    androidTestImplementation(libs.androidx.test.ext)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.test.ext.ktx)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+fun getApiKey(): String {
+    val apiKeyFile = rootProject.file("apikey.properties")
+
+    val apikeyProperties = Properties()
+    apikeyProperties.load(apiKeyFile.inputStream())
+
+    return apikeyProperties.getProperty("API_KEY")
 }

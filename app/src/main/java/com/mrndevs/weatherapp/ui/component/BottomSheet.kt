@@ -1,59 +1,74 @@
 package com.mrndevs.weatherapp.ui.component
 
-import android.app.Activity
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import com.mrndevs.weatherapp.ui.theme.grey
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheet(
     onDismissRequest: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    isShowSheet: Boolean,
     containerColor: Color = Color.White,
-    sheetState: SheetState = rememberModalBottomSheetState(),
+    skipPartiallyExpanded: Boolean = true,
+    confirmValueChange: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val window = (LocalContext.current as Activity).window
+    // Create a CoroutineScope that can be used to launch coroutines.
+    val scope = rememberCoroutineScope()
+    // Create a mutable state for showSheet that will be used to control the visibility of the bottom sheet.
+    var showSheet by remember { mutableStateOf(false) }
+    // Create a ModalBottomSheetState that will be used to manage the state of the bottom sheet.
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = skipPartiallyExpanded,
+        confirmValueChange = { confirmValueChange }
+    )
 
-    ModalBottomSheet(
-        onDismissRequest = {
-            window.navigationBarColor = Color.Transparent.toArgb()
-            onDismissRequest(false)
-        },
-        sheetState = sheetState,
-        containerColor = containerColor,
-        dragHandle = { HandledContent() },
-        modifier = modifier
-    ) {
-        window.navigationBarColor = Color.Black.toArgb()
-        Column {
-            content()
+    // Launch an effect that updates the value of showSheet whenever isShowSheet changes.
+    LaunchedEffect(isShowSheet) {
+        if (!isShowSheet && sheetState.isVisible) {
+            // If isShowSheet is false and the bottom sheet is visible, hide the bottom sheet.
+            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                // When the bottom sheet is hidden, set showSheet to false and call onDismissRequest with false.
+                showSheet = false
+                onDismissRequest(false)
+            }
+        } else {
+            // If isShowSheet is true, set showSheet to true.
+            showSheet = isShowSheet
         }
     }
-}
 
-@Composable
-private fun HandledContent() {
-    Surface(
-        modifier = Modifier.padding(vertical = 22.dp),
-        color = grey,
-        shape = MaterialTheme.shapes.extraLarge
-    ) {
-        Box(Modifier.size(width = 32.dp, height = 4.dp))
+    // If showSheet is true, display the bottom sheet.
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                // When the bottom sheet is dismissed, hide the bottom sheet.
+                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                    // When the bottom sheet is hidden, set showSheet to false and call onDismissRequest with false.
+                    showSheet = false
+                    onDismissRequest(false)
+                }
+            },
+            sheetState = sheetState,
+            containerColor = containerColor,
+            scrimColor = MaterialTheme.colorScheme.primary,
+            modifier = modifier.navigationBarsPadding()
+        ) {
+            content()
+        }
     }
 }

@@ -13,11 +13,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -28,40 +28,50 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.mrndevs.weatherapp.R
 import com.mrndevs.weatherapp.ui.theme.SP16
-import com.mrndevs.weatherapp.ui.theme.primary
 
 @Composable
 fun SearchFieldWithIndicator(
-    modifier: Modifier = Modifier,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onRemoveQuery: () -> Unit,
-    onSearchConfirm: (String) -> Unit
+    onSearchConfirm: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    requestFocus: Boolean? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     SearchFieldWithIndicatorContent(
-        interactionSource = interactionSource,
-        modifier = modifier,
         onRemoveQuery = onRemoveQuery,
-        onSearchConfirm = onSearchConfirm
+        onSearchConfirm = onSearchConfirm,
+        modifier = modifier,
+        interactionSource = interactionSource,
+        requestFocus = requestFocus
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchFieldWithIndicatorContent(
-    interactionSource: MutableInteractionSource,
-    modifier: Modifier = Modifier,
     onRemoveQuery: () -> Unit,
-    onSearchConfirm: (String) -> Unit
+    onSearchConfirm: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    requestFocus: Boolean?,
+    interactionSource: MutableInteractionSource
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
 
     var query by remember { mutableStateOf("") }
+
+    LaunchedEffect(focusRequester) {
+        if (requestFocus == true) {
+            focusRequester.requestFocus()
+        }
+    }
 
     BasicTextField(
         value = query,
@@ -73,8 +83,13 @@ private fun SearchFieldWithIndicatorContent(
         textStyle = SP16.copy(color = Color.White),
         enabled = true,
         singleLine = true,
-        cursorBrush = SolidColor(primary),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        cursorBrush = SolidColor(Color.White),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Search,
+            autoCorrect = true,
+            keyboardType = KeyboardType.Text,
+            capitalization = KeyboardCapitalization.Sentences
+        ),
         keyboardActions = KeyboardActions(onSearch = {
             onSearchConfirm(query)
             keyboardController?.hide()
@@ -89,8 +104,8 @@ private fun SearchFieldWithIndicatorContent(
             visualTransformation = VisualTransformation.None,
             placeholder = {
                 Text(
-                    text = stringResource(R.string.text_placeholder_search),
-                    color = Color.LightGray,
+                    text = stringResource(R.string.placeholder_search),
+                    color = Color.White,
                     style = SP16
                 )
             },
@@ -103,14 +118,14 @@ private fun SearchFieldWithIndicatorContent(
                         Icon(
                             imageVector = Icons.Rounded.Close,
                             tint = Color.White,
-                            contentDescription = stringResource(R.string.text_placeholder_clear_text)
+                            contentDescription = stringResource(R.string.placeholder_clear_text)
                         )
                     }
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.ic_search_line_24),
                         tint = Color.White,
-                        contentDescription = stringResource(R.string.text_placeholder_search)
+                        contentDescription = stringResource(R.string.placeholder_search)
                     )
                 }
             },
