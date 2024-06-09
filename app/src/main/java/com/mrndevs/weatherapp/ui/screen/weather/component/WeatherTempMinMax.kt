@@ -8,17 +8,16 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.mrndevs.weatherapp.R
-import com.mrndevs.weatherapp.data.source.local.model.WeatherEntity
 import com.mrndevs.weatherapp.ui.component.ShimmerEffect
+import com.mrndevs.weatherapp.ui.screen.weather.model.WeatherData
 import com.mrndevs.weatherapp.ui.theme.SP20
-import com.mrndevs.weatherapp.ui.theme.grey
+import com.mrndevs.weatherapp.ui.theme.accordion
 import com.mrndevs.weatherapp.util.Util.addDegreeSymbol
 
 @Composable
-fun WeatherTempMinMax(forecast: WeatherEntity.Forecast, isLoading: Boolean = false) {
-    val day = forecast.forecastDay.firstOrNull()?.day
-    val maxTempt = day?.maxTempC ?: 0.0
-    val minTemp = day?.minTempC ?: 0.0
+fun WeatherTempMinMax(weatherData: WeatherData, isLoading: Boolean = false) {
+    val minTemp = weatherData.currentMinTemp
+    val maxTemp = weatherData.currentMaxTemp
 
     if (isLoading) {
         ShimmerEffect(width = 80.dp)
@@ -27,11 +26,11 @@ fun WeatherTempMinMax(forecast: WeatherEntity.Forecast, isLoading: Boolean = fal
             withStyle(style = SP20.copy(Color.White).toSpanStyle()) {
                 append(minTemp.addDegreeSymbol())
             }
-            withStyle(style = SP20.copy(color = grey).toSpanStyle()) {
+            withStyle(style = SP20.copy(color = accordion).toSpanStyle()) {
                 append(stringResource(R.string.placeholder_min_max_temp))
             }
             withStyle(style = SP20.copy(Color.White).toSpanStyle()) {
-                append(maxTempt.addDegreeSymbol())
+                append(maxTemp.addDegreeSymbol())
             }
         })
     }

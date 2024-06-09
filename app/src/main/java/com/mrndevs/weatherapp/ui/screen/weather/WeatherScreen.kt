@@ -1,7 +1,6 @@
 package com.mrndevs.weatherapp.ui.screen.weather
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
@@ -23,6 +21,7 @@ import com.mrndevs.weatherapp.ui.screen.weather.view.WeatherForecast
 import com.mrndevs.weatherapp.ui.screen.weather.view.WeatherHeader
 import com.mrndevs.weatherapp.ui.screen.weather.view.WeatherStatus
 import com.mrndevs.weatherapp.ui.screen.weather.view.WeatherToday
+import com.mrndevs.weatherapp.ui.theme.LocalTheme
 import com.mrndevs.weatherapp.ui.theme.backgroundDarkGradient
 import com.mrndevs.weatherapp.ui.theme.backgroundLightGradient
 import com.mrndevs.weatherapp.util.Constant
@@ -39,12 +38,9 @@ fun WeatherScreen(
         onSearch = viewModel::updateSearchQuery,
         onGetWeather = viewModel::getWeather,
         onResetSearchData = viewModel::resetSearchData,
-        onShowLocationSheet = viewModel::showLocationSheet
+        onShowLocationSheet = viewModel::showLocationSheet,
+        onRefresh = viewModel::refreshWeather
     )
-
-    LaunchedEffect(Unit) {
-        viewModel.init()
-    }
 
     WeatherScreen(
         uiState = uiState.value,
@@ -57,7 +53,7 @@ fun WeatherScreen(
     uiState: WeatherUiState,
     screenCallback: WeatherScreenCallback
 ) {
-    val isDarkTheme = isSystemInDarkTheme()
+    val isDarkTheme = LocalTheme.current.isDarkTheme
     val spacing = Constant.DEFAULT_SPACING.dp
 
     val gradient: Brush = if (isDarkTheme) {
@@ -78,7 +74,7 @@ fun WeatherScreen(
             onClickSetting = screenCallback.onNavigateToSetting
         )
 
-        PullRefresh(onRefresh = {}) {
+        PullRefresh(onRefresh = screenCallback.onRefresh) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(spacing),
                 contentPadding = PaddingValues(18.dp)

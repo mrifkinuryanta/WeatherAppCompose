@@ -1,7 +1,6 @@
 package com.mrndevs.weatherapp.ui.screen.weather.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,20 +23,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.mrndevs.weatherapp.R
+import com.mrndevs.weatherapp.data.source.local.model.EmptyStatusEnum
 import com.mrndevs.weatherapp.data.source.local.model.WeatherSearchEntity
 import com.mrndevs.weatherapp.ui.component.BottomSheet
 import com.mrndevs.weatherapp.ui.component.CardItem
 import com.mrndevs.weatherapp.ui.component.CircleBackground
+import com.mrndevs.weatherapp.ui.component.EmptyState
 import com.mrndevs.weatherapp.ui.component.SearchFieldWithIndicator
 import com.mrndevs.weatherapp.ui.component.ShimmerEffect
 import com.mrndevs.weatherapp.ui.screen.weather.WeatherUiState
 import com.mrndevs.weatherapp.ui.theme.SP14
 import com.mrndevs.weatherapp.ui.theme.SP16
 import com.mrndevs.weatherapp.ui.theme.W400
-import com.mrndevs.weatherapp.ui.theme.grey
+import com.mrndevs.weatherapp.ui.theme.accordion
 import com.mrndevs.weatherapp.util.Constant
 
 @Composable
@@ -51,26 +49,19 @@ fun WeatherLocationBottomSheet(
     onResetSearchData: () -> Unit
 ) {
     var requestFocus by remember { mutableStateOf(false) }
-    var query by remember { mutableStateOf(Constant.EMPTY_STRING) }
     val spacing = Constant.DEFAULT_SPACING.dp
 
     val containerColor = MaterialTheme.colorScheme.background
 
     LaunchedEffect(isShowSheet) {
-        if (uiState.settings.isFirstRunApp) {
-            requestFocus = true
-        } else {
-            requestFocus = false
-        }
+        requestFocus = uiState.settings.isFirstRunApp
         if (!isShowSheet) {
             onResetSearchData()
         }
     }
 
     BottomSheet(
-        onDismissRequest = { state ->
-            onDismissRequest(state)
-        },
+        onDismissRequest = { state -> onDismissRequest(state) },
         modifier = Modifier.fillMaxHeight(0.8f),
         containerColor = containerColor,
         confirmValueChange = uiState.location.name.isNotBlank(),
@@ -78,9 +69,8 @@ fun WeatherLocationBottomSheet(
     ) {
         Column(modifier = Modifier.padding(horizontal = 18.dp)) {
             SearchFieldWithIndicator(
-                onRemoveQuery = { query = Constant.EMPTY_STRING },
+                onRemoveQuery = { onSearch(Constant.EMPTY_STRING) },
                 onSearchConfirm = { result ->
-                    query = result
                     onSearch(result)
                 },
                 requestFocus = requestFocus
@@ -115,18 +105,12 @@ fun WeatherLocationBottomSheet(
                     }
                 }
 
+                uiState.searchResult.isEmpty() && uiState.searchQuery.isNotBlank() -> {
+                    EmptyState(status = EmptyStatusEnum.EMPTY_SEARCH)
+                }
+
                 uiState.searchResult.isEmpty() -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_search_eye_line_24),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(72.dp)
-                        )
-                    }
+                    EmptyState(status = EmptyStatusEnum.SEARCH)
                 }
 
                 else -> {
@@ -169,7 +153,7 @@ private fun LocationItem(
         ) {
             Column {
                 Text(text = item.name, style = SP16)
-                Text(text = item.country, style = SP14.W400, color = grey)
+                Text(text = item.country, style = SP14.W400, color = accordion)
             }
             Spacer(modifier = Modifier.weight(1f))
             CircleBackground {
@@ -189,10 +173,7 @@ private fun LocationItem(
 
 @Composable
 private fun LocationLoadingItem() {
-    CardItem(
-        modifier = Modifier.fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.primary
-    ) {
+    CardItem(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.padding(horizontal = 18.dp, vertical = Constant.DEFAULT_SPACING.dp),
             verticalAlignment = Alignment.CenterVertically

@@ -5,5 +5,6 @@ data class WeatherScreenCallback(
     val onSearch: (String) -> Unit = {},
     val onGetWeather: (String) -> Unit = {},
     val onResetSearchData: () -> Unit = {},
-    val onShowLocationSheet: (Boolean) -> Unit = {}
+    val onShowLocationSheet: (Boolean) -> Unit = {},
+    val onRefresh: () -> Unit = {}
 )

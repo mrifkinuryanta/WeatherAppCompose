@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.mrndevs.weatherapp.data.source.local.model.TempUnitEnum
 import com.mrndevs.weatherapp.ui.theme.SP16
 import com.mrndevs.weatherapp.ui.theme.W400
 import com.mrndevs.weatherapp.ui.theme.orange
@@ -31,21 +32,33 @@ import kotlin.math.abs
 @Composable
 fun TemperatureIndicator(
     modifier: Modifier = Modifier,
+    tempUnit: TempUnitEnum,
     minTemp: Double,
     maxTemp: Double,
     globalMinTemp: Double,
     globalMaxTemp: Double
 ) {
-    val minPossibleTemp = -50.0
+    val isCelsius = tempUnit == TempUnitEnum.CELSIUS
+    val minPossibleTemp = if (isCelsius) -50.0 else -58.0
     val adjustedMinTemp = minTemp + abs(minPossibleTemp)
     val progress = adjustedMinTemp / maxTemp
     val paddingStart = if (minTemp == globalMinTemp) 0.dp else (minTemp - globalMinTemp).dp
     val paddingEnd = if (maxTemp == globalMaxTemp) 0.dp else (globalMaxTemp - maxTemp).dp
 
     val colors: List<Color> = when {
-        minTemp < 0 -> listOf(Color.Blue, Color.Cyan, Color.Green)
-        minTemp in 0.0..15.0 -> listOf(Color.Cyan, Color.Green, Color.Yellow)
-        minTemp in 15.0..30.0 -> listOf(Color.Green, Color.Yellow, orange)
+        minTemp < if (isCelsius) 0 else 32 -> listOf(Color.Blue, Color.Cyan, Color.Green)
+        minTemp in if (isCelsius) 0.0..15.0 else 32.0..59.0 -> listOf(
+            Color.Cyan,
+            Color.Green,
+            Color.Yellow
+        )
+
+        minTemp in if (isCelsius) 15.0..30.0 else 59.0..86.0 -> listOf(
+            Color.Green,
+            Color.Yellow,
+            orange
+        )
+
         else -> listOf(Color.Yellow, orange, Color.Red)
     }
     Row(
@@ -89,7 +102,8 @@ private fun CustomProgressIndicator(
 
     val animatedProgress = animateFloatAsState(
         targetValue = progress.coerceIn(0f, 1f),
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        label = ""
     ).value
 
     Box(modifier = modifier) {

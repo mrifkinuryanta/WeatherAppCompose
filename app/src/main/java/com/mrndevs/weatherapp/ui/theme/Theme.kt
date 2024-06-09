@@ -1,12 +1,12 @@
 package com.mrndevs.weatherapp.ui.theme
 
 import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
@@ -40,11 +40,13 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = Color.White,
 )
 
+val LocalTheme = compositionLocalOf { ThemeState() }
+
 @Composable
 fun WeatherAppTheme(
-    isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
+    val isDarkTheme = LocalTheme.current.isDarkTheme
     val colorScheme = if (isDarkTheme) DarkColorScheme else LightColorScheme
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -62,3 +64,7 @@ fun WeatherAppTheme(
         content = content
     )
 }
+
+data class ThemeState(
+    val isDarkTheme: Boolean = false
+)

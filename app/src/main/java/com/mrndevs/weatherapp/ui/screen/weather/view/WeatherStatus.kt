@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,7 +35,7 @@ import com.mrndevs.weatherapp.ui.screen.weather.WeatherUiState
 import com.mrndevs.weatherapp.ui.theme.SP14
 import com.mrndevs.weatherapp.ui.theme.SP18
 import com.mrndevs.weatherapp.ui.theme.W600
-import com.mrndevs.weatherapp.ui.theme.grey
+import com.mrndevs.weatherapp.ui.theme.accordion
 import com.mrndevs.weatherapp.util.Constant
 import com.mrndevs.weatherapp.util.Util.addDegreeSymbol
 
@@ -51,7 +50,7 @@ fun WeatherStatus(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACIN
         UVContent(uv = uiState.currentWeather.uv, isLoading = uiState.isLoading)
         ReelFeelContent(
             body = uiState.currentWeather.text,
-            value = uiState.currentWeather.feelsLikeC.addDegreeSymbol(),
+            value = uiState.weatherData.currentFeelsLike.addDegreeSymbol(),
             isLoading = uiState.isLoading
         )
         WindContent(
@@ -60,7 +59,7 @@ fun WeatherStatus(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACIN
             isLoading = uiState.isLoading
         )
         PressureContent(
-            pressure = uiState.currentWeather.pressureMb.toFloat(),
+            uiState = uiState,
             isLoading = uiState.isLoading
         )
     }
@@ -69,10 +68,8 @@ fun WeatherStatus(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACIN
 @Composable
 private fun FlowRowScope.UVContent(uv: Int, isLoading: Boolean = false) {
     StatusItem(
-        modifier = Modifier.weight(1f),
         title = stringResource(R.string.title_uv),
         body = UltraVioletEnum.getUVIndex(uv).label,
-        containerColor = MaterialTheme.colorScheme.primary,
         isLoading = isLoading
     ) {
         CircleBackground(modifier = Modifier.aspectRatio(1f)) {
@@ -87,10 +84,8 @@ private fun FlowRowScope.UVContent(uv: Int, isLoading: Boolean = false) {
 @Composable
 private fun FlowRowScope.ReelFeelContent(body: String, value: String, isLoading: Boolean = false) {
     StatusItem(
-        modifier = Modifier.weight(1f),
         title = stringResource(R.string.title_real_feel),
         body = body,
-        containerColor = MaterialTheme.colorScheme.primary,
         isLoading = isLoading
     ) {
         CircleBackground(modifier = Modifier.aspectRatio(1f)) {
@@ -109,10 +104,8 @@ private fun FlowRowScope.WindContent(
     isLoading: Boolean = false
 ) {
     StatusItem(
-        modifier = Modifier.weight(1f),
         title = stringResource(R.string.title_wind),
         body = wind.label,
-        containerColor = MaterialTheme.colorScheme.primary,
         isLoading = isLoading
     ) {
         Compass(direction = degree.toFloat())
@@ -120,28 +113,31 @@ private fun FlowRowScope.WindContent(
 }
 
 @Composable
-private fun FlowRowScope.PressureContent(pressure: Float, isLoading: Boolean = false) {
+private fun FlowRowScope.PressureContent(
+    uiState: WeatherUiState,
+    isLoading: Boolean = false
+) {
+    val pressure = uiState.weatherData.currentPressure.toFloat()
+    val pressureUnit = uiState.settings.pressureUnit
+
     StatusItem(
-        modifier = Modifier.weight(1f),
         title = stringResource(R.string.title_pressure),
-        body = stringResource(R.string.placeholder_hpa, pressure.toInt()),
-        containerColor = MaterialTheme.colorScheme.primary,
+        body = stringResource(R.string.placeholder_pressure, pressure.toInt(), pressureUnit.value),
         isLoading = isLoading
     ) {
-        PressureIndicator(pressure = pressure)
+        PressureIndicator(pressure = pressure, pressureUnit = pressureUnit)
     }
 }
 
 @Composable
-private fun StatusItem(
+private fun FlowRowScope.StatusItem(
     modifier: Modifier = Modifier,
     title: String,
     body: String,
-    containerColor: Color,
     isLoading: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    CardItem(modifier = modifier, containerColor = containerColor) {
+    CardItem(modifier = modifier.weight(1f)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -158,7 +154,7 @@ private fun StatusItem(
                     content()
                 }
             }
-            Text(text = title, style = SP14, color = grey)
+            Text(text = title, style = SP14, color = accordion)
             if (isLoading) {
                 ShimmerEffect(width = 50.dp, height = 14.dp)
             } else {

@@ -16,24 +16,24 @@ object Util {
         return "${this.toInt()}\u00B0"
     }
 
-    fun Int.getFormattedTime(): String {
+    fun Int.getFormattedTime(timeZone: String): String {
         val instant = Instant.ofEpochSecond(this.toLong())
         val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
-            .withZone(ZoneId.systemDefault())
+            .withZone(ZoneId.of(timeZone))
         return formatter.format(instant)
     }
 
-    fun Int.getFormattedDate(): String {
+    fun Int.getFormattedDate(timeZone: String): String {
         val instant = Instant.ofEpochSecond(this.toLong())
         val formatter = DateTimeFormatter.ofPattern("MMM, dd", Locale.getDefault())
-            .withZone(ZoneId.systemDefault())
+            .withZone(ZoneId.of(timeZone))
         return formatter.format(instant)
     }
 
-    fun Int.getFormattedDay(): String {
+    fun Int.getFormattedDay(timeZone: String): String {
         val instant = Instant.ofEpochSecond(this.toLong())
         val formatter = DateTimeFormatter.ofPattern("EEEE", Locale.getDefault())
-            .withZone(ZoneId.systemDefault())
+            .withZone(ZoneId.of(timeZone))
         val formattedInstant = formatter.format(instant)
         val formattedCurrent = formatter.format(Instant.now())
         val formattedTomorrow = formatter.format(Instant.now().plusSeconds(86400))
@@ -43,14 +43,5 @@ object Util {
             formattedTomorrow -> "Tomorrow"
             else -> formattedInstant
         }
-    }
-
-    fun Int.checkUpdatedTime(): Boolean {
-        val currentTime = getCurrentTime()
-        return this + 900 < currentTime
-    }
-
-    fun getCurrentTime(): Long {
-        return Instant.now().epochSecond
     }
 }

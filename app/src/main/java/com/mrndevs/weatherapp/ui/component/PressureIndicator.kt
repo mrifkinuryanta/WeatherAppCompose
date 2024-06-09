@@ -18,19 +18,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.mrndevs.weatherapp.R
+import com.mrndevs.weatherapp.data.source.local.model.PressureUnitEnum
 
 @Composable
-fun PressureIndicator(modifier: Modifier = Modifier, pressure: Float) {
-    PressureIndicatorContent(modifier = modifier, pressure = pressure)
+fun PressureIndicator(
+    modifier: Modifier = Modifier,
+    pressure: Float,
+    pressureUnit: PressureUnitEnum
+) {
+    PressureIndicatorContent(modifier = modifier, pressure = pressure, pressureUnit = pressureUnit)
 }
 
 @Composable
 private fun PressureIndicatorContent(
     modifier: Modifier = Modifier,
     pressure: Float,
-    minPressure: Float = 950f,
-    maxPressure: Float = 1050f
+    pressureUnit: PressureUnitEnum
 ) {
+    val (minPressure, maxPressure) = if (pressureUnit != PressureUnitEnum.INHG) {
+        950f to 1050f
+    } else {
+        28.05f to 31.01f
+    }
     val normalizedPressure =
         ((pressure - minPressure) / (maxPressure - minPressure)).coerceIn(0f, 1f)
     val backgroundColor = MaterialTheme.colorScheme.background

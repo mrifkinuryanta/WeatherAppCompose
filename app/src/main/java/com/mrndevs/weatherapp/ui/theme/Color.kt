@@ -3,7 +3,7 @@ package com.mrndevs.weatherapp.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val orange = Color(0xFFFFA500)
-val grey = Color(0x80FFFFFF)
+val accordion = Color(0xFFF7F7F7)
 val backgroundDark = Color(0xFF134CB5)
 val backgroundLight = Color(0xFF33AADD)
 val primaryContainerDark = Color(0xFF001026)

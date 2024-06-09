@@ -45,8 +45,11 @@ class WeatherMapper @Inject constructor() {
                         dateEpoch = it.dateEpoch,
                         day = WeatherEntity.Forecast.ForecastDay.Day(
                             maxTempC = it.day.maxTempC,
+                            maxTempF = it.day.maxTempF,
                             minTempC = it.day.minTempC,
+                            minTempF = it.day.minTempF,
                             maxWindKph = it.day.maxWindKph,
+                            maxWindMph = it.day.maxWindMph,
                             code = it.day.condition.code
                         ),
                         hour = it.hour.map { hour ->

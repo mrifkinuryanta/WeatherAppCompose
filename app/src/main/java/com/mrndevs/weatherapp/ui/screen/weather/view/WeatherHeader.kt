@@ -49,16 +49,17 @@ fun WeatherHeader(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACIN
                 )
             }
             if (isLoading) {
+                Spacer(modifier = Modifier.height(spacing))
                 ShimmerEffect(width = 64.dp, height = 64.dp, shape = CircleShape)
                 Spacer(modifier = Modifier.height(spacing))
             } else {
                 Text(
-                    text = currentWeather.tempC.addDegreeSymbol(),
+                    text = weatherData.currentTemp.addDegreeSymbol(),
                     style = SP20.copy(fontSize = 64.sp),
                     color = Color.White
                 )
             }
-            WeatherTempMinMax(forecast, isLoading)
+            WeatherTempMinMax(weatherData, isLoading)
             Spacer(modifier = Modifier.height(20.dp))
             Card(
                 shape = RoundedCornerShape(20.dp),
@@ -87,7 +88,8 @@ fun WeatherHeader(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACIN
                         painterRes = R.drawable.ic_windy_line_24,
                         text = stringResource(
                             R.string.placeholder_wind,
-                            currentWeather.windKph.toInt()
+                            weatherData.currentWindSpeed.toInt(),
+                            settings.windSpeedUnit.value
                         ),
                         isLoading = isLoading
                     )

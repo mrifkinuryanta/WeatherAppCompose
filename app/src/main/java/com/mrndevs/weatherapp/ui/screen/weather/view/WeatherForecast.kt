@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mrndevs.weatherapp.R
+import com.mrndevs.weatherapp.data.source.local.model.TempUnitEnum
 import com.mrndevs.weatherapp.data.source.local.model.WeatherEntity
 import com.mrndevs.weatherapp.ui.component.CardItem
 import com.mrndevs.weatherapp.ui.component.CircleBackground
@@ -34,7 +34,9 @@ import com.mrndevs.weatherapp.util.Util.getFormattedDay
 
 @Composable
 fun WeatherForecast(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACING.dp) {
-    CardItem(containerColor = MaterialTheme.colorScheme.primary) {
+    val forecast = uiState.forecast.forecastDay
+
+    CardItem {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -51,10 +53,6 @@ fun WeatherForecast(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPAC
                 WeatherIcon(painterRes = R.drawable.ic_calendar_event_line_24)
             }
             Spacer(modifier = Modifier.height(spacing))
-            val forecast = uiState.forecast.forecastDay
-            val minTemp = forecast.minByOrNull { it.day.minTempC }?.day?.minTempC ?: 0.0
-            val maxTemp = forecast.maxByOrNull { it.day.maxTempC }?.day?.maxTempC ?: 0.0
-            val globalTemp = minTemp to maxTemp
             if (uiState.isLoading) {
                 repeat(3) {
                     ItemLoadingForecast()
@@ -62,7 +60,10 @@ fun WeatherForecast(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPAC
                 }
             } else {
                 repeat(forecast.size) { index ->
-                    ItemForecast(forecast[index], globalTemp)
+                    ItemForecast(
+                        uiState = uiState,
+                        item = forecast[index]
+                    )
                     Spacer(modifier = Modifier.height(spacing))
                 }
             }
@@ -72,16 +73,19 @@ fun WeatherForecast(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPAC
 
 @Composable
 private fun ItemForecast(
-    item: WeatherEntity.Forecast.ForecastDay,
-    globalTemp: Pair<Double, Double>
+    uiState: WeatherUiState,
+    item: WeatherEntity.Forecast.ForecastDay
 ) {
-    val (globalMinTemp, globalMaxTemp) = globalTemp
+    val (globalMinTemp, globalMaxTemp) = uiState.weatherData.forecastMinTemp to uiState.weatherData.forecastMaxTemp
+    val (minTemp, maxTemp) = if (uiState.settings.tempUnit == TempUnitEnum.CELSIUS) {
+        item.day.minTempC to item.day.maxTempC
+    } else {
+        item.day.minTempF to item.day.maxTempF
+    }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = item.dateEpoch.getFormattedDay(),
+            text = item.dateEpoch.getFormattedDay(uiState.location.tzId),
             style = SP18,
             color = Color.White,
             modifier = Modifier.weight(1f)
@@ -99,8 +103,9 @@ private fun ItemForecast(
         Spacer(modifier = Modifier.width(16.dp))
         TemperatureIndicator(
             modifier = Modifier.weight(1f),
-            minTemp = item.day.minTempC,
-            maxTemp = item.day.maxTempC,
+            tempUnit = uiState.settings.tempUnit,
+            minTemp = minTemp,
+            maxTemp = maxTemp,
             globalMinTemp = globalMinTemp,
             globalMaxTemp = globalMaxTemp
         )
