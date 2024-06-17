@@ -17,6 +17,7 @@ out/
 /.idea
 .gradle/
 build/
+app/build/
 
 # Local configuration property files
 local.properties
