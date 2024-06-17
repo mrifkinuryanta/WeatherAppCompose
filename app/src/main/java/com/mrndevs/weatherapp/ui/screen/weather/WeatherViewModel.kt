@@ -3,24 +3,22 @@ package com.mrndevs.weatherapp.ui.screen.weather
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mrndevs.weatherapp.base.Result
-import com.mrndevs.weatherapp.data.source.local.model.PressureUnitEnum
 import com.mrndevs.weatherapp.data.source.local.model.SettingsEntity
-import com.mrndevs.weatherapp.data.source.local.model.TempUnitEnum
+import com.mrndevs.weatherapp.data.source.local.model.WeatherData
 import com.mrndevs.weatherapp.data.source.local.model.WeatherEntity
-import com.mrndevs.weatherapp.data.source.local.model.WindSpeedUnitEnum
 import com.mrndevs.weatherapp.domain.GetLocationUseCase
 import com.mrndevs.weatherapp.domain.GetSettingsUseCase
 import com.mrndevs.weatherapp.domain.GetWeatherFromApiUseCase
 import com.mrndevs.weatherapp.domain.GetWeatherFromLocalUseCase
 import com.mrndevs.weatherapp.domain.SaveSettingsUseCase
 import com.mrndevs.weatherapp.domain.SaveWeatherUseCase
-import com.mrndevs.weatherapp.ui.screen.weather.model.WeatherData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,32 +33,43 @@ class WeatherViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(WeatherUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-        checkFirstRunApp { getWeather() }
-    }
-
-    fun getWeather(query: String? = null) {
-        _uiState.value = _uiState.value.copy(isLoading = true)
-
-        when (query) {
-            null -> getWeatherFromLocal()
-            else -> getWeatherFromApi(query)
+    fun init() {
+        getSettings()
+        uiState.value.settings?.let { settings ->
+            val lastUpdate = settings.updateAt
+            val currentTime = Instant.now().epochSecond
+            val currentLocation = settings.currentLocation
+            val location =
+                if (currentTime - lastUpdate > 3600 && currentLocation.isNotBlank()) currentLocation else null
+            if (settings.isFirstRunApp.not()) {
+                getWeather(location)
+            }
         }
     }
 
-    private fun getWeatherFromApi(location: String) {
+    fun getWeather(query: String? = null, isUpdate: Boolean = false) {
+        when (query) {
+            null -> getWeatherFromLocal()
+            else -> getWeatherFromApi(query, isUpdate)
+        }
+    }
+
+    private fun getWeatherFromApi(location: String, isUpdate: Boolean) {
+        _uiState.value = _uiState.value.copy(isLoading = true)
         getWeatherFromApiUseCase(location).onEach { result ->
             when (result) {
                 is Result.Success -> {
-                    _uiState.update { it.copy(isLoading = false) }
-
-                    updateCurrentData(result.data)
+                    val setting = uiState.value.settings?.copy(
+                        isFirstRunApp = false,
+                        isDarkTheme = result.data.current.isDay.not(),
+                        currentTimeZone = result.data.location.tzId,
+                        currentLocation = result.data.location.name,
+                        updateAt = result.data.location.localtimeEpoch
+                    )
+                    saveSettings(setting)
                     saveWeather(result.data)
-
-                    if (_uiState.value.settings.isFirstRunApp) {
-                        val data = uiState.value.settings.copy(isFirstRunApp = false)
-                        _uiState.value = _uiState.value.copy(settings = data)
-                        saveSettings(data)
+                    if (isUpdate) {
+                        getWeatherFromLocal()
                     }
                 }
 
@@ -75,15 +84,7 @@ class WeatherViewModel @Inject constructor(
 
     private fun getWeatherFromLocal() {
         getWeatherFromLocalUseCase().onEach { result ->
-            if (result != null) {
-                _uiState.update { it.copy(isLoading = false) }
-
-                updateCurrentData(result)
-            } else {
-                _uiState.update {
-                    it.copy(isLoading = false)
-                }
-            }
+            _uiState.update { it.copy(isLoading = false, weatherData = result as WeatherData) }
         }.launchIn(viewModelScope)
     }
 
@@ -108,94 +109,27 @@ class WeatherViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun checkFirstRunApp(onFalse: () -> Unit) {
+    fun getSettings() {
         getSettingsUseCase().onEach { result ->
-            val settings = result ?: SettingsEntity()
+            val settings = result ?: uiState.value.settings
             _uiState.update { currentData ->
                 currentData.copy(settings = settings)
             }
-
-            if (settings.isFirstRunApp) {
-                _uiState.value = _uiState.value.copy(
-                    isShowLocationSheet = true
-                )
-            } else {
-                onFalse()
-            }
         }.launchIn(viewModelScope)
-    }
-
-    private fun updateCurrentData(data: WeatherEntity) {
-        val settings = uiState.value.settings
-        val oneHourBeforeCurrentTime = data.location.localtimeEpoch - 7200
-        val hours = data.forecast.forecastDay.take(2).flatMap { it.hour }
-        val twentyFourHoursList =
-            hours.filter { it.timeEpoch >= oneHourBeforeCurrentTime }.take(24)
-
-        val weatherData = if (settings.tempUnit == TempUnitEnum.CELSIUS) {
-            WeatherData(
-                currentTemp = data.current.tempC,
-                currentFeelsLike = data.current.feelsLikeC,
-                currentMinTemp = data.forecast.forecastDay.firstOrNull()?.day?.minTempC ?: 0.0,
-                currentMaxTemp = data.forecast.forecastDay.firstOrNull()?.day?.maxTempC ?: 0.0,
-                forecastMinTemp = data.forecast.forecastDay.minByOrNull { it.day.minTempC }?.day?.minTempC
-                    ?: 0.0,
-                forecastMaxTemp = data.forecast.forecastDay.maxByOrNull { it.day.maxTempC }?.day?.maxTempC
-                    ?: 0.0
-            )
-        } else {
-            WeatherData(
-                currentTemp = data.current.tempF,
-                currentFeelsLike = data.current.feelsLikeF,
-                currentMinTemp = data.forecast.forecastDay.firstOrNull()?.day?.minTempF ?: 0.0,
-                currentMaxTemp = data.forecast.forecastDay.firstOrNull()?.day?.maxTempF ?: 0.0,
-                forecastMinTemp = data.forecast.forecastDay.minByOrNull { it.day.minTempF }?.day?.minTempF
-                    ?: 0.0,
-                forecastMaxTemp = data.forecast.forecastDay.maxByOrNull { it.day.maxTempF }?.day?.maxTempF
-                    ?: 0.0
-            )
-        }
-
-        val currentWindSpeed = if (settings.windSpeedUnit == WindSpeedUnitEnum.KPH) {
-            data.current.windKph
-        } else {
-            data.current.windMph
-        }
-
-        val currentPressure =
-            if (settings.pressureUnit != PressureUnitEnum.INHG) {
-                data.current.pressureMb
-            } else {
-                data.current.pressureIn
-            }
-
-        _uiState.update { currentData ->
-            currentData.copy(
-                settings = currentData.settings.copy(isDarkTheme = data.current.isDay.not()),
-                location = data.location,
-                currentWeather = data.current,
-                forecast = data.forecast,
-                weatherData = weatherData.copy(
-                    currentWindSpeed = currentWindSpeed,
-                    currentPressure = currentPressure,
-                    forecastToday = twentyFourHoursList
-                )
-            )
-        }
-
-        saveSettings(uiState.value.settings)
     }
 
     private fun saveWeather(data: WeatherEntity) {
         saveWeatherUseCase(data).launchIn(viewModelScope)
     }
 
-    private fun saveSettings(data: SettingsEntity) {
-        saveSettingsUseCase(data).launchIn(viewModelScope)
+    private fun saveSettings(data: SettingsEntity?) {
+        saveSettingsUseCase(data).onEach {
+            getSettings()
+        }.launchIn(viewModelScope)
     }
 
     fun refreshWeather() {
-        checkFirstRunApp { getWeather(uiState.value.location.name) }
+        getWeather(uiState.value.weatherData.currentLocation.name, isUpdate = true)
     }
 
     fun updateSearchQuery(newQuery: String) {

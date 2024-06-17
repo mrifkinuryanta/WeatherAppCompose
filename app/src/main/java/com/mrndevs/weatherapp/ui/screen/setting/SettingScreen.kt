@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -29,10 +30,14 @@ import com.mrndevs.weatherapp.util.Constant
 
 @Composable
 fun SettingScreen(viewModel: SettingViewModel = hiltViewModel(), onNavigateUp: () -> Unit) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
+    LaunchedEffect(uiState.settings) {
+        viewModel.init()
+    }
 
     SettingScreen(
-        uiState = uiState.value,
+        uiState = uiState,
         onNavigateUp = onNavigateUp,
         onSaveSettings = viewModel::saveSettings
     )

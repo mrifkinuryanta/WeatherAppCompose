@@ -4,6 +4,7 @@ import com.mrndevs.weatherapp.base.Result
 import com.mrndevs.weatherapp.data.mapper.WeatherMapper
 import com.mrndevs.weatherapp.data.source.local.datasource.LocalDataSource
 import com.mrndevs.weatherapp.data.source.local.model.SettingsEntity
+import com.mrndevs.weatherapp.data.source.local.model.WeatherData
 import com.mrndevs.weatherapp.data.source.local.model.WeatherEntity
 import com.mrndevs.weatherapp.data.source.local.model.WeatherSearchEntity
 import com.mrndevs.weatherapp.data.source.network.datasource.WeatherApiDataSource
@@ -11,6 +12,7 @@ import com.mrndevs.weatherapp.di.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
@@ -28,11 +30,17 @@ class WeatherRepositoryImpl @Inject constructor(
         return localDataSource.saveWeather(weatherEntity)
     }
 
-    override fun getWeather(): Flow<WeatherEntity?> {
-        return localDataSource.getWeather()
+    override fun getWeather(): Flow<WeatherData?> = flow {
+        val settings = localDataSource.getSettings().first()
+        val data = localDataSource.getWeather().first()
+        if (data != null) {
+            emit(weatherMapper.mapWeatherResponseToWeatherData(data, settings))
+        } else {
+            emit(null)
+        }
     }
 
-    override fun saveSettings(data: SettingsEntity): Flow<Boolean> {
+    override fun saveSettings(data: SettingsEntity?): Flow<Boolean> {
         return localDataSource.saveSettings(data)
     }
 

@@ -47,15 +47,15 @@ fun WeatherStatus(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACIN
         verticalArrangement = Arrangement.spacedBy(spacing),
         maxItemsInEachRow = 2
     ) {
-        UVContent(uv = uiState.currentWeather.uv, isLoading = uiState.isLoading)
+        UVContent(uv = uiState.weatherData.currentWeather.uv, isLoading = uiState.isLoading)
         ReelFeelContent(
-            body = uiState.currentWeather.text,
+            body = uiState.weatherData.currentWeather.text,
             value = uiState.weatherData.currentFeelsLike.addDegreeSymbol(),
             isLoading = uiState.isLoading
         )
         WindContent(
-            wind = uiState.currentWeather.windDir,
-            degree = uiState.currentWeather.windDegree,
+            wind = uiState.weatherData.currentWeather.windDir,
+            degree = uiState.weatherData.currentWeather.windDegree,
             isLoading = uiState.isLoading
         )
         PressureContent(
@@ -117,15 +117,21 @@ private fun FlowRowScope.PressureContent(
     uiState: WeatherUiState,
     isLoading: Boolean = false
 ) {
-    val pressure = uiState.weatherData.currentPressure.toFloat()
-    val pressureUnit = uiState.settings.pressureUnit
+    uiState.settings?.let {
+        val pressure = uiState.weatherData.currentPressure.toFloat()
+        val pressureUnit = uiState.settings.pressureUnit
 
-    StatusItem(
-        title = stringResource(R.string.title_pressure),
-        body = stringResource(R.string.placeholder_pressure, pressure.toInt(), pressureUnit.value),
-        isLoading = isLoading
-    ) {
-        PressureIndicator(pressure = pressure, pressureUnit = pressureUnit)
+        StatusItem(
+            title = stringResource(R.string.title_pressure),
+            body = stringResource(
+                R.string.placeholder_pressure,
+                pressure.toInt(),
+                pressureUnit.value
+            ),
+            isLoading = isLoading
+        ) {
+            PressureIndicator(pressure = pressure, pressureUnit = pressureUnit)
+        }
     }
 }
 

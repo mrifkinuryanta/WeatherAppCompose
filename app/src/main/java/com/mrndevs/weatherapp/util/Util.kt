@@ -1,5 +1,8 @@
 package com.mrndevs.weatherapp.util
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -43,5 +46,10 @@ object Util {
             formattedTomorrow -> "Tomorrow"
             else -> formattedInstant
         }
+    }
+
+    fun openBrowser(context: Context, url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
     }
 }

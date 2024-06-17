@@ -34,8 +34,6 @@ import com.mrndevs.weatherapp.util.Util.getFormattedDay
 
 @Composable
 fun WeatherForecast(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACING.dp) {
-    val forecast = uiState.forecast.forecastDay
-
     CardItem {
         Column(
             modifier = Modifier
@@ -59,10 +57,11 @@ fun WeatherForecast(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPAC
                     Spacer(modifier = Modifier.height(spacing))
                 }
             } else {
-                repeat(forecast.size) { index ->
+                val items = uiState.weatherData.forecastDay
+                repeat(items.size) { index ->
                     ItemForecast(
                         uiState = uiState,
-                        item = forecast[index]
+                        item = items[index]
                     )
                     Spacer(modifier = Modifier.height(spacing))
                 }
@@ -77,7 +76,7 @@ private fun ItemForecast(
     item: WeatherEntity.Forecast.ForecastDay
 ) {
     val (globalMinTemp, globalMaxTemp) = uiState.weatherData.forecastMinTemp to uiState.weatherData.forecastMaxTemp
-    val (minTemp, maxTemp) = if (uiState.settings.tempUnit == TempUnitEnum.CELSIUS) {
+    val (minTemp, maxTemp) = if (uiState.settings?.tempUnit == TempUnitEnum.CELSIUS) {
         item.day.minTempC to item.day.maxTempC
     } else {
         item.day.minTempF to item.day.maxTempF
@@ -85,7 +84,7 @@ private fun ItemForecast(
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = item.dateEpoch.getFormattedDay(uiState.location.tzId),
+            text = item.dateEpoch.getFormattedDay(uiState.weatherData.currentLocation.tzId),
             style = SP18,
             color = Color.White,
             modifier = Modifier.weight(1f)
@@ -101,14 +100,16 @@ private fun ItemForecast(
             )
         }
         Spacer(modifier = Modifier.width(16.dp))
-        TemperatureIndicator(
-            modifier = Modifier.weight(1f),
-            tempUnit = uiState.settings.tempUnit,
-            minTemp = minTemp,
-            maxTemp = maxTemp,
-            globalMinTemp = globalMinTemp,
-            globalMaxTemp = globalMaxTemp
-        )
+        uiState.settings?.let {
+            TemperatureIndicator(
+                modifier = Modifier.weight(1f),
+                tempUnit = uiState.settings.tempUnit,
+                minTemp = minTemp,
+                maxTemp = maxTemp,
+                globalMinTemp = globalMinTemp,
+                globalMaxTemp = globalMaxTemp
+            )
+        }
     }
 }
 

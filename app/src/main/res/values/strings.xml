@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Weather App</string>
+    <string name="app_name">World Weather</string>
     <string name="title_today">Today</string>
     <string name="title_uv">UV</string>
     <string name="title_real_feel">Real Feel</string>
@@ -11,6 +11,16 @@
     <string name="title_temperature_unit">Temperature Unit</string>
     <string name="title_wind_speed_unit">Wind Speed Unit</string>
     <string name="title_pressure_unit">Pressure Unit</string>
+    <string name="title_about">About</string>
+    <string name="title_version">Version</string>
+    <string name="title_source_code">Source Code</string>
+    <string name="title_privacy_policy">Privacy Policy</string>
+    <string name="title_feedback">Feedback</string>
+    <string name="title_rate_us">Rate Us</string>
+    <string name="title_search">Search for a city</string>
+    <string name="title_empty_search">No results found</string>
+    <string name="title_welcome">Welcome to World Weather App!</string>
+    <string name="title_offline">No internet connection</string>
     <string name="placeholder_search">Search</string>
     <string name="placeholder_clear_text">Clear</string>
     <string name="placeholder_back_button">Back</string>
@@ -19,13 +29,11 @@
     <string name="placeholder_humidity">%1$d%%</string>
     <string name="placeholder_wind">%1$d %2$s</string>
     <string name="placeholder_min_max_temp">~</string>
-    <string name="title_about">About</string>
-    <string name="title_version">Version</string>
-    <string name="title_source_code">Source Code</string>
     <string name="placeholder_available_on_github">Available on GitHub</string>
-    <string name="title_privacy_policy">Privacy Policy</string>
     <string name="placeholder_read_our_privacy_policy">Read our privacy policy</string>
-    <string name="title_feedback">Feedback</string>
-    <string name="title_rate_us">Rate Us</string>
     <string name="placeholder_rate_us_on_play_store">Rate us on Play Store</string>
+    <string name="placeholder_message_search">Type the name of the city you want to search for.</string>
+    <string name="placeholder_message_empty_search">Please check you have the right spelling,or try different keywords.</string>
+    <string name="placeholder_message_welcome">Search for a city to get started.</string>
+    <string name="placeholder_message_offline">You don\'t seem to be connected to the internet. Please check your connection and try again.</string>
 </resources>

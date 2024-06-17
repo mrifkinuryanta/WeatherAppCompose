@@ -2,6 +2,7 @@ package com.mrndevs.weatherapp.data.repository
 
 import com.mrndevs.weatherapp.base.Result
 import com.mrndevs.weatherapp.data.source.local.model.SettingsEntity
+import com.mrndevs.weatherapp.data.source.local.model.WeatherData
 import com.mrndevs.weatherapp.data.source.local.model.WeatherEntity
 import com.mrndevs.weatherapp.data.source.local.model.WeatherSearchEntity
 import kotlinx.coroutines.flow.Flow
@@ -17,14 +18,14 @@ interface WeatherRepository {
      * Get the weather data from the local data source
      * @return a flow of WeatherEntity
      */
-    fun getWeather(): Flow<WeatherEntity?>
+    fun getWeather(): Flow<WeatherData?>
 
     /**
      * Save the settings
      * @param data the settings to save
      * @return a flow of Boolean
      */
-    fun saveSettings(data: SettingsEntity): Flow<Boolean>
+    fun saveSettings(data: SettingsEntity?): Flow<Boolean>
 
     /**
      * Get the settings

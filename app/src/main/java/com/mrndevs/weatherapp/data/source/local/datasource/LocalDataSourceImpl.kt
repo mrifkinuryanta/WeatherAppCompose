@@ -39,7 +39,7 @@ class LocalDataSourceImpl @Inject constructor(
         }
     }.flowOn(ioDispatcher)
 
-    override fun saveSettings(data: SettingsEntity): Flow<Boolean> = flow {
+    override fun saveSettings(data: SettingsEntity?): Flow<Boolean> = flow {
         try {
             dataStore.edit { preferences ->
                 preferences[SETTINGS.toPreferenceKey()] = Gson().toJson(data)

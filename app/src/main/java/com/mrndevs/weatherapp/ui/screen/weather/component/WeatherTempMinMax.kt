@@ -8,8 +8,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.mrndevs.weatherapp.R
+import com.mrndevs.weatherapp.data.source.local.model.WeatherData
 import com.mrndevs.weatherapp.ui.component.ShimmerEffect
-import com.mrndevs.weatherapp.ui.screen.weather.model.WeatherData
 import com.mrndevs.weatherapp.ui.theme.SP20
 import com.mrndevs.weatherapp.ui.theme.accordion
 import com.mrndevs.weatherapp.util.Util.addDegreeSymbol

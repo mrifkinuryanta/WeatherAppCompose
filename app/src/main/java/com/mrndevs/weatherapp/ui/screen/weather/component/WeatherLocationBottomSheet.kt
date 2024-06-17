@@ -54,7 +54,7 @@ fun WeatherLocationBottomSheet(
     val containerColor = MaterialTheme.colorScheme.background
 
     LaunchedEffect(isShowSheet) {
-        requestFocus = uiState.settings.isFirstRunApp
+        requestFocus = uiState.settings?.isFirstRunApp == true
         if (!isShowSheet) {
             onResetSearchData()
         }
@@ -64,7 +64,7 @@ fun WeatherLocationBottomSheet(
         onDismissRequest = { state -> onDismissRequest(state) },
         modifier = Modifier.fillMaxHeight(0.8f),
         containerColor = containerColor,
-        confirmValueChange = uiState.location.name.isNotBlank(),
+        confirmValueChange = !uiState.settings?.currentLocation.isNullOrBlank(),
         isShowSheet = isShowSheet
     ) {
         Column(modifier = Modifier.padding(horizontal = 18.dp)) {
@@ -76,15 +76,15 @@ fun WeatherLocationBottomSheet(
                 requestFocus = requestFocus
             )
             Spacer(modifier = Modifier.height(spacing))
-            if (uiState.location.name.isNotBlank()) {
+            if (uiState.weatherData.currentLocation.name.isNotBlank()) {
                 val item = WeatherSearchEntity(
-                    name = uiState.location.name,
-                    country = uiState.location.country
+                    name = uiState.weatherData.currentLocation.name,
+                    country = uiState.weatherData.currentLocation.country
                 )
                 LocationItem(
                     item = item,
-                    weather = uiState.currentWeather.code,
-                    isDay = uiState.currentWeather.isDay,
+                    weather = uiState.weatherData.currentWeather.code,
+                    isDay = uiState.weatherData.currentWeather.isDay,
                     isCurrent = true,
                     onClick = {
                         onClick(item.name)

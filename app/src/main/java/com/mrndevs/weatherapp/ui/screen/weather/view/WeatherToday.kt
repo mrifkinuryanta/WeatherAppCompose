@@ -64,9 +64,9 @@ fun WeatherToday(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACING
                 if (uiState.isLoading) {
                     ShimmerEffect(width = 80.dp)
                 } else {
-                    val date = uiState.forecast.forecastDay.firstOrNull()?.dateEpoch ?: 0
+                    val date = uiState.weatherData.currentLocation.localtimeEpoch
                     Text(
-                        text = if (date != Constant.ZERO) date.getFormattedDate(uiState.location.tzId) else "",
+                        text = if (date != Constant.ZERO) date.getFormattedDate(uiState.weatherData.currentLocation.tzId) else "",
                         style = SP18.W400,
                         color = Color.White
                     )
@@ -82,12 +82,13 @@ fun WeatherToday(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACING
                         ItemLoadingToday(index == 1)
                     }
                 }
-                items(uiState.weatherData.forecastToday.size) { index ->
-                    val item = uiState.weatherData.forecastToday[index]
+                val items = uiState.weatherData.forecastToday
+                items(count = items.size) { index ->
+                    val item = items[index]
                     ItemToday(
                         uiState = uiState,
                         item = item,
-                        isSelected = uiState.location.localtimeEpoch in item.timeEpoch..(item.timeEpoch + 3600)
+                        isSelected = uiState.weatherData.currentLocation.localtimeEpoch in item.timeEpoch..(item.timeEpoch + 3600)
                     )
                 }
             }
@@ -110,7 +111,7 @@ private fun ItemToday(
         Brush.radialGradient(borderLightGradient) to secondaryLight
     }
 
-    val temp = if (uiState.settings.tempUnit == TempUnitEnum.CELSIUS) item.tempC else item.tempF
+    val temp = if (uiState.settings?.tempUnit == TempUnitEnum.CELSIUS) item.tempC else item.tempF
 
     val modifier = Modifier
         .let {
@@ -145,7 +146,7 @@ private fun ItemToday(
         val time = if (isSelected) {
             stringResource(R.string.title_now)
         } else {
-            item.timeEpoch.getFormattedTime(uiState.location.tzId)
+            item.timeEpoch.getFormattedTime(uiState.weatherData.currentLocation.tzId)
         }
         Text(
             text = time,

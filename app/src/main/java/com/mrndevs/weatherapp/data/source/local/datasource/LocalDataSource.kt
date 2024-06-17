@@ -9,7 +9,7 @@ interface LocalDataSource {
 
     fun getWeather(): Flow<WeatherEntity?>
 
-    fun saveSettings(data: SettingsEntity): Flow<Boolean>
+    fun saveSettings(data: SettingsEntity?): Flow<Boolean>
 
     fun getSettings(): Flow<SettingsEntity?>
 }

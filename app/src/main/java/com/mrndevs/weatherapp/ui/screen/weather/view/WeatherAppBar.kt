@@ -22,7 +22,7 @@ import com.mrndevs.weatherapp.ui.theme.SP18
 @Composable
 fun WeatherAppBar(
     modifier: Modifier = Modifier,
-    location: String,
+    location: String?,
     onSelectLocation: () -> Unit,
     onClickSetting: () -> Unit
 ) {
@@ -40,18 +40,22 @@ fun WeatherAppBar(
                 .clickable { onSelectLocation() }) {
             WeatherIcon(painterRes = R.drawable.ic_map_pin_2_line_24, size = 27.dp)
             Spacer(modifier = Modifier.size(12.dp))
-            Text(
-                text = location,
-                style = SP18,
-                color = Color.White
-            )
+            location?.let {
+                Text(
+                    text = location.ifBlank { "Location" },
+                    style = SP18,
+                    color = Color.White
+                )
+            }
             WeatherIcon(painterRes = R.drawable.ic_arrow_down_24)
         }
         Spacer(modifier = Modifier.weight(1f))
         WeatherIcon(
             painterRes = R.drawable.ic_settings_3_line_24,
             size = 27.dp,
-            onClick = onClickSetting
+            onClick = {
+                if (!location.isNullOrBlank()) onClickSetting()
+            }
         )
     }
 }

@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mrndevs.weatherapp.ui.screen.setting.SettingScreen
+import com.mrndevs.weatherapp.ui.screen.splashscreen.SplashScreen
 import com.mrndevs.weatherapp.ui.screen.weather.WeatherScreen
 
 @Composable
@@ -21,11 +22,20 @@ fun NavigationHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavigationRoute.WeatherPage.route,
+        startDestination = NavigationRoute.SplashScreen.route,
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None },
         modifier = modifier
     ) {
+        composable(route = NavigationRoute.SplashScreen.route) {
+            SplashScreen(
+                onNavigateToWeather = {
+                    navController.navigate(NavigationRoute.WeatherPage.route) {
+                        popUpTo(NavigationRoute.SplashScreen.route) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(route = NavigationRoute.WeatherPage.route) {
             WeatherScreen(onNavigateToSetting = { navController.navigate(NavigationRoute.WeatherSettingPage.route) })
         }

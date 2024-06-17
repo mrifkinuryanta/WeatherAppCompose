@@ -20,7 +20,7 @@ class SettingViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SettingUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
+    fun init() {
         getSettings()
     }
 
@@ -32,12 +32,7 @@ class SettingViewModel @Inject constructor(
     }
 
     fun saveSettings(settings: SettingsEntity) {
-        val newSettings = _uiState.value.settings.copy(
-            tempUnit = settings.tempUnit,
-            windSpeedUnit = settings.windSpeedUnit,
-            pressureUnit = settings.pressureUnit
-        )
-        saveSettingsUseCase(newSettings).onEach {
+        saveSettingsUseCase(settings).onEach {
             getSettings()
         }.launchIn(viewModelScope)
     }

@@ -1,8 +1,13 @@
 package com.mrndevs.weatherapp.data.mapper
 
+import com.mrndevs.weatherapp.data.source.local.model.PressureUnitEnum
+import com.mrndevs.weatherapp.data.source.local.model.SettingsEntity
+import com.mrndevs.weatherapp.data.source.local.model.TempUnitEnum
+import com.mrndevs.weatherapp.data.source.local.model.WeatherData
 import com.mrndevs.weatherapp.data.source.local.model.WeatherEntity
 import com.mrndevs.weatherapp.data.source.local.model.WeatherSearchEntity
 import com.mrndevs.weatherapp.data.source.local.model.WindDirectionEnum
+import com.mrndevs.weatherapp.data.source.local.model.WindSpeedUnitEnum
 import com.mrndevs.weatherapp.data.source.network.model.response.WeatherResponse
 import com.mrndevs.weatherapp.data.source.network.model.response.WeatherSearchResponse
 import javax.inject.Inject
@@ -64,6 +69,70 @@ class WeatherMapper @Inject constructor() {
                     )
                 }
             )
+        )
+    }
+
+    fun mapWeatherResponseToWeatherData(
+        data: WeatherEntity,
+        settings: SettingsEntity?
+    ): WeatherData {
+        val oneHourBeforeCurrentTime = data.location.localtimeEpoch - 7200
+        val hours = data.forecast.forecastDay.take(2).flatMap { it.hour }
+        val twentyFourHoursList =
+            hours.filter { it.timeEpoch >= oneHourBeforeCurrentTime }.take(24)
+
+        val weatherData = if (settings?.tempUnit == TempUnitEnum.CELSIUS) {
+            WeatherData(
+                currentTemp = data.current.tempC,
+                currentFeelsLike = data.current.feelsLikeC,
+                currentMinTemp = data.forecast.forecastDay.firstOrNull()?.day?.minTempC ?: 0.0,
+                currentMaxTemp = data.forecast.forecastDay.firstOrNull()?.day?.maxTempC ?: 0.0,
+                forecastMinTemp = data.forecast.forecastDay.minByOrNull { it.day.minTempC }?.day?.minTempC
+                    ?: 0.0,
+                forecastMaxTemp = data.forecast.forecastDay.maxByOrNull { it.day.maxTempC }?.day?.maxTempC
+                    ?: 0.0
+            )
+        } else {
+            WeatherData(
+                currentTemp = data.current.tempF,
+                currentFeelsLike = data.current.feelsLikeF,
+                currentMinTemp = data.forecast.forecastDay.firstOrNull()?.day?.minTempF ?: 0.0,
+                currentMaxTemp = data.forecast.forecastDay.firstOrNull()?.day?.maxTempF ?: 0.0,
+                forecastMinTemp = data.forecast.forecastDay.minByOrNull { it.day.minTempF }?.day?.minTempF
+                    ?: 0.0,
+                forecastMaxTemp = data.forecast.forecastDay.maxByOrNull { it.day.maxTempF }?.day?.maxTempF
+                    ?: 0.0
+            )
+        }
+
+        val currentWindSpeed = if (settings?.windSpeedUnit == WindSpeedUnitEnum.KPH) {
+            data.current.windKph
+        } else {
+            data.current.windMph
+        }
+
+        val currentPressure =
+            if (settings?.pressureUnit != PressureUnitEnum.INHG) {
+                data.current.pressureMb
+            } else {
+                data.current.pressureIn
+            }
+
+        return weatherData.copy(
+            currentWindSpeed = currentWindSpeed,
+            currentPressure = currentPressure,
+            currentLocation = WeatherEntity.Location(
+                name = data.location.name,
+                region = data.location.region,
+                country = data.location.country,
+                lat = data.location.lat,
+                lon = data.location.lon,
+                tzId = data.location.tzId,
+                localtimeEpoch = data.location.localtimeEpoch
+            ),
+            currentWeather = data.current,
+            forecastToday = twentyFourHoursList,
+            forecastDay = data.forecast.forecastDay
         )
     }
 

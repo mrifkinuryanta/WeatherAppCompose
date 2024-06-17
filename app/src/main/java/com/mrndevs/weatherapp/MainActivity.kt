@@ -21,8 +21,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            viewModel.getSettings()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-            val themeState = ThemeState(isDarkTheme = uiState.settings.isDarkTheme)
+            val themeState = ThemeState(isDarkTheme = uiState.settings?.isDarkTheme == true)
 
             CompositionLocalProvider(LocalTheme provides themeState) {
                 WeatherAppTheme {

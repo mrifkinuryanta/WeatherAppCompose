@@ -43,8 +43,8 @@ fun WeatherHeader(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACIN
         uiState.apply {
             Box(modifier = Modifier.size(150.dp), contentAlignment = Alignment.Center) {
                 WeatherImage(
-                    code = uiState.currentWeather.code,
-                    isDay = uiState.currentWeather.isDay,
+                    code = uiState.weatherData.currentWeather.code,
+                    isDay = uiState.weatherData.currentWeather.isDay,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -73,26 +73,31 @@ fun WeatherHeader(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACIN
                 ) {
                     ItemStatus(
                         painterRes = R.drawable.ic_rainy_line_24,
-                        text = stringResource(R.string.placeholder_cloud, currentWeather.cloud),
+                        text = stringResource(
+                            R.string.placeholder_cloud,
+                            uiState.weatherData.currentWeather.cloud
+                        ),
                         isLoading = isLoading
                     )
                     ItemStatus(
                         painterRes = R.drawable.ic_water_percent_line_24,
                         text = stringResource(
                             R.string.placeholder_humidity,
-                            currentWeather.humidity
+                            weatherData.currentWeather.humidity
                         ),
                         isLoading = isLoading
                     )
-                    ItemStatus(
-                        painterRes = R.drawable.ic_windy_line_24,
-                        text = stringResource(
-                            R.string.placeholder_wind,
-                            weatherData.currentWindSpeed.toInt(),
-                            settings.windSpeedUnit.value
-                        ),
-                        isLoading = isLoading
-                    )
+                    settings?.let {
+                        ItemStatus(
+                            painterRes = R.drawable.ic_windy_line_24,
+                            text = stringResource(
+                                R.string.placeholder_wind,
+                                weatherData.currentWindSpeed.toInt(),
+                                settings.windSpeedUnit.value
+                            ),
+                            isLoading = isLoading
+                        )
+                    }
                 }
             }
         }
