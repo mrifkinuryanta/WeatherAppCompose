@@ -1,35 +1,35 @@
 package com.mrndevs.weatherapp.ui.screen.splashscreen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import com.mrndevs.weatherapp.R
+import androidx.compose.ui.graphics.Brush
+import com.mrndevs.weatherapp.ui.theme.LocalTheme
+import com.mrndevs.weatherapp.ui.theme.backgroundDarkGradient
+import com.mrndevs.weatherapp.ui.theme.backgroundLightGradient
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
     onNavigateToWeather: () -> Unit
 ) {
+    val isDark = LocalTheme.current.isDarkTheme
+    val gradient: Brush = if (isDark) {
+        Brush.linearGradient(backgroundDarkGradient)
+    } else {
+        Brush.linearGradient(backgroundLightGradient)
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(R.drawable.ic_launcher_foreground),
-            contentDescription = "Splash Logo"
-        )
-    }
+            .background(gradient)
+    )
     LaunchedEffect(Unit) {
-        delay(1000)
+        delay(500)
         onNavigateToWeather()
     }
 }

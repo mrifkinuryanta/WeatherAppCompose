@@ -1,6 +1,8 @@
 package com.mrndevs.weatherapp.ui.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -62,16 +64,18 @@ fun <T> SingleSelectBottomSheet(
     ) {
         Column {
             LazyColumn(contentPadding = PaddingValues(start = 18.dp, end = 18.dp, bottom = 8.dp)) {
-                items(count = items.size, key = { items[it].label }) { index ->
+                items(count = items.size) { index ->
                     val item = items[index]
                     ItemRadio(
                         icon = item.icon,
                         label = item.label,
                         selected = selectedData == item.value,
                         onSelected = {
-                            selectedData = item.value
-                            onApply(item.value)
-                            onDismissRequest(false)
+                            if (value != item.value) {
+                                selectedData = item.value
+                                onApply(item.value)
+                                onDismissRequest(false)
+                            }
                         }
                     )
                 }
@@ -87,19 +91,23 @@ private fun ItemRadio(
     selected: Boolean,
     onSelected: () -> Unit
 ) {
-    val background = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent
+    val backgroundColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+        label = "BackgroundColorAnimation"
+    )
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(background)
+            .background(backgroundColor)
             .toggleable(
                 value = selected,
                 role = Role.RadioButton,
                 onValueChange = { onSelected() }
             )
-            .padding(horizontal = 18.dp, vertical = 14.dp),
+            .padding(horizontal = 18.dp, vertical = 14.dp)
+            .animateContentSize(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         icon?.let {
