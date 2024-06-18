@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mrndevs.weatherapp.R
-import com.mrndevs.weatherapp.data.source.local.model.OptionData
 import com.mrndevs.weatherapp.data.source.local.model.PressureUnitEnum
 import com.mrndevs.weatherapp.data.source.local.model.SettingsEntity
 import com.mrndevs.weatherapp.data.source.local.model.TempUnitEnum
@@ -27,6 +26,10 @@ fun SettingGeneral(uiState: SettingUiState, onSaveSettings: (SettingsEntity) -> 
     var showTempUnitSheet by remember { mutableStateOf(false) }
     var showWindSpeedUnitSheet by remember { mutableStateOf(false) }
     var showPressureUniSheet by remember { mutableStateOf(false) }
+
+    val tempUnitList = TempUnitEnum.tempUnitOption
+    val windSpeedUnitList = WindSpeedUnitEnum.windSpeedUnitOption
+    val pressureUnitList = PressureUnitEnum.pressureUnitOption
 
     CardItem(modifier = Modifier.padding(horizontal = 18.dp)) {
         Column {
@@ -61,9 +64,7 @@ fun SettingGeneral(uiState: SettingUiState, onSaveSettings: (SettingsEntity) -> 
 
     SingleSelectBottomSheet(
         onDismissRequest = { state -> showTempUnitSheet = state },
-        items = TempUnitEnum.entries.map { item ->
-            OptionData(icon = item.icon, label = item.value, value = item)
-        },
+        items = tempUnitList,
         value = uiState.settings.tempUnit,
         showSheet = showTempUnitSheet,
         onApply = { result ->
@@ -73,9 +74,7 @@ fun SettingGeneral(uiState: SettingUiState, onSaveSettings: (SettingsEntity) -> 
 
     SingleSelectBottomSheet(
         onDismissRequest = { state -> showWindSpeedUnitSheet = state },
-        items = WindSpeedUnitEnum.entries.map { item ->
-            OptionData(label = item.value, value = item)
-        },
+        items = windSpeedUnitList,
         value = uiState.settings.windSpeedUnit,
         showSheet = showWindSpeedUnitSheet,
         onApply = { result ->
@@ -85,9 +84,7 @@ fun SettingGeneral(uiState: SettingUiState, onSaveSettings: (SettingsEntity) -> 
 
     SingleSelectBottomSheet(
         onDismissRequest = { state -> showPressureUniSheet = state },
-        items = PressureUnitEnum.entries.map { item ->
-            OptionData(label = item.value, value = item)
-        },
+        items = pressureUnitList,
         value = uiState.settings.pressureUnit,
         showSheet = showPressureUniSheet,
         onApply = { result ->

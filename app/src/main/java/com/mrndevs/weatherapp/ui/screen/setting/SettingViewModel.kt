@@ -33,7 +33,7 @@ class SettingViewModel @Inject constructor(
 
     fun saveSettings(settings: SettingsEntity) {
         saveSettingsUseCase(settings).onEach {
-            getSettings()
+            _uiState.value = _uiState.value.copy(settings = settings)
         }.launchIn(viewModelScope)
     }
 }
