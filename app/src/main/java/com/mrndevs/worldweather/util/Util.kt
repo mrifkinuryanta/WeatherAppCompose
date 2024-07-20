@@ -1,5 +1,6 @@
 package com.mrndevs.worldweather.util
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -10,6 +11,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Brush
+import com.mrndevs.worldweather.BuildConfig
 import com.mrndevs.worldweather.ui.theme.LocalTheme
 import com.mrndevs.worldweather.ui.theme.backgroundDarkGradient
 import com.mrndevs.worldweather.ui.theme.backgroundLightGradient
@@ -66,6 +68,26 @@ object Util {
     fun openBrowser(context: Context, url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         context.startActivity(intent)
+    }
+
+    fun openPlayStore(context: Context) {
+        val appPackageName = BuildConfig.APPLICATION_ID
+
+        try {
+            context.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=$appPackageName")
+                )
+            )
+        } catch (e: ActivityNotFoundException) {
+            context.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
+                )
+            )
+        }
     }
 
     @Composable
