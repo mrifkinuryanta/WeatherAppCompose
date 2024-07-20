@@ -8,15 +8,15 @@ plugins {
 }
 
 android {
-    namespace = "com.mrndevs.weatherapp"
+    namespace = "com.mrndevs.worldweather"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.mrndevs.weatherapp"
+        applicationId = "com.mrndevs.worldweather"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
