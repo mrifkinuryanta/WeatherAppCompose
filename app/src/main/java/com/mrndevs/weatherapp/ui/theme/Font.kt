@@ -55,8 +55,6 @@ inline val SP10
         platformStyle = PlatformTextStyle(includeFontPadding = false)
     )
 
-inline val TextStyle.W700 get() = this.copy(fontWeight = FontWeight.W700)
-
 inline val TextStyle.W600 get() = this.copy(fontWeight = FontWeight.W600)
 
 inline val TextStyle.W400 get() = this.copy(fontWeight = FontWeight.W400)

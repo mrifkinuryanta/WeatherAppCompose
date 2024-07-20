@@ -81,15 +81,16 @@ fun WeatherToday(uiState: WeatherUiState, spacing: Dp = Constant.DEFAULT_SPACING
                     items(5) { index ->
                         ItemLoadingToday(index == 1)
                     }
-                }
-                val items = uiState.weatherData.forecastToday
-                items(count = items.size) { index ->
-                    val item = items[index]
-                    ItemToday(
-                        uiState = uiState,
-                        item = item,
-                        isSelected = uiState.weatherData.currentLocation.localtimeEpoch in item.timeEpoch..(item.timeEpoch + 3600)
-                    )
+                } else {
+                    val items = uiState.weatherData.forecastToday
+                    items(count = items.size) { index ->
+                        val item = items[index]
+                        ItemToday(
+                            uiState = uiState,
+                            item = item,
+                            isSelected = uiState.weatherData.currentLocation.localtimeEpoch in item.timeEpoch..(item.timeEpoch + 3600)
+                        )
+                    }
                 }
             }
         }

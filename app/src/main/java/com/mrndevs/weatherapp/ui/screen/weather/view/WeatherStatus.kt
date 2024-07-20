@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -164,7 +165,12 @@ private fun FlowRowScope.StatusItem(
             if (isLoading) {
                 ShimmerEffect(width = 50.dp, height = 14.dp)
             } else {
-                Text(text = body, style = SP14.W600, color = Color.White)
+                Text(
+                    text = body,
+                    style = SP14.W600,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
