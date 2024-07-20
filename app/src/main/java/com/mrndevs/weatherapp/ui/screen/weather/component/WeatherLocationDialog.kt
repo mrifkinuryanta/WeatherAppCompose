@@ -1,16 +1,21 @@
 package com.mrndevs.weatherapp.ui.screen.weather.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,14 +28,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.mrndevs.weatherapp.R
 import com.mrndevs.weatherapp.data.source.local.model.EmptyStatusEnum
 import com.mrndevs.weatherapp.data.source.local.model.WeatherSearchEntity
-import com.mrndevs.weatherapp.ui.component.BottomSheet
+import com.mrndevs.weatherapp.ui.component.BaseDialog
 import com.mrndevs.weatherapp.ui.component.CardItem
 import com.mrndevs.weatherapp.ui.component.CircleBackground
 import com.mrndevs.weatherapp.ui.component.EmptyState
-import com.mrndevs.weatherapp.ui.component.SearchFieldWithIndicator
+import com.mrndevs.weatherapp.ui.component.SearchField
 import com.mrndevs.weatherapp.ui.component.ShimmerEffect
 import com.mrndevs.weatherapp.ui.screen.weather.WeatherUiState
 import com.mrndevs.weatherapp.ui.theme.SP14
@@ -38,37 +45,67 @@ import com.mrndevs.weatherapp.ui.theme.SP16
 import com.mrndevs.weatherapp.ui.theme.W400
 import com.mrndevs.weatherapp.ui.theme.accordion
 import com.mrndevs.weatherapp.util.Constant
+import com.mrndevs.weatherapp.util.Util.getColorGradient
 
 @Composable
-fun WeatherLocationBottomSheet(
+fun WeatherLocationDialog(
     onDismissRequest: (Boolean) -> Unit,
     uiState: WeatherUiState,
-    isShowSheet: Boolean,
+    isShowDialog: Boolean,
     onSearch: (String) -> Unit,
     onClick: (String) -> Unit,
     onResetSearchData: () -> Unit
 ) {
     var requestFocus by remember { mutableStateOf(false) }
-    val spacing = Constant.DEFAULT_SPACING.dp
 
-    val containerColor = MaterialTheme.colorScheme.background
-
-    LaunchedEffect(isShowSheet) {
+    LaunchedEffect(isShowDialog) {
         requestFocus = uiState.settings?.isFirstRunApp == true
-        if (!isShowSheet) {
+        if (!isShowDialog) {
             onResetSearchData()
         }
     }
 
-    BottomSheet(
+    BaseDialog(
         onDismissRequest = { state -> onDismissRequest(state) },
-        modifier = Modifier.fillMaxHeight(0.8f),
-        containerColor = containerColor,
-        confirmValueChange = !uiState.settings?.currentLocation.isNullOrBlank(),
-        isShowSheet = isShowSheet
+        isShowDialog = isShowDialog,
     ) {
+        DialogContent(
+            uiState = uiState,
+            requestFocus = requestFocus,
+            onSearch = onSearch,
+            onClick = onClick,
+            onDismissRequest = onDismissRequest
+        )
+    }
+}
+
+@Composable
+private fun DialogContent(
+    uiState: WeatherUiState,
+    requestFocus: Boolean,
+    onSearch: (String) -> Unit,
+    onClick: (String) -> Unit,
+    onDismissRequest: (Boolean) -> Unit
+) {
+    val spacing = Constant.DEFAULT_SPACING.dp
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(getColorGradient())
+            .padding(8.dp)
+    ) {
+        Row(modifier = Modifier.statusBarsPadding()) {
+            IconButton(onClick = { onDismissRequest(false) }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.placeholder_back_button),
+                    tint = Color.White
+                )
+            }
+        }
         Column(modifier = Modifier.padding(horizontal = 18.dp)) {
-            SearchFieldWithIndicator(
+            SearchField(
                 onRemoveQuery = { onSearch(Constant.EMPTY_STRING) },
                 onSearchConfirm = { result ->
                     onSearch(result)

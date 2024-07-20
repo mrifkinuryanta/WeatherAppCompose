@@ -1,23 +1,28 @@
 package com.mrndevs.weatherapp.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -30,20 +35,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
 import com.mrndevs.weatherapp.R
 import com.mrndevs.weatherapp.ui.theme.SP16
+import com.mrndevs.weatherapp.ui.theme.accordion
 
 @Composable
-fun SearchFieldWithIndicator(
+fun SearchField(
     onRemoveQuery: () -> Unit,
     onSearchConfirm: (String) -> Unit,
     modifier: Modifier = Modifier,
     requestFocus: Boolean? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
-    SearchFieldWithIndicatorContent(
+    SearchFieldContent(
         onRemoveQuery = onRemoveQuery,
         onSearchConfirm = onSearchConfirm,
         modifier = modifier,
@@ -52,9 +56,8 @@ fun SearchFieldWithIndicator(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchFieldWithIndicatorContent(
+private fun SearchFieldContent(
     onRemoveQuery: () -> Unit,
     onSearchConfirm: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -75,7 +78,18 @@ private fun SearchFieldWithIndicatorContent(
 
     BasicTextField(
         value = query,
-        onValueChange = { query = it },
+        onValueChange = { newText ->
+            val newValue = when {
+                newText.length >= 20 -> {
+                    newText.substring(0, 20)
+                }
+
+                else -> {
+                    newText
+                }
+            }
+            query = newValue
+        },
         modifier = modifier
             .fillMaxWidth()
             .focusRequester(focusRequester),
@@ -95,52 +109,46 @@ private fun SearchFieldWithIndicatorContent(
             keyboardController?.hide()
             focusManager.clearFocus()
         })
-    ) {
-        TextFieldDefaults.DecorationBox(
-            value = query,
-            innerTextField = it,
-            singleLine = true,
-            enabled = true,
-            visualTransformation = VisualTransformation.None,
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.placeholder_search),
-                    color = Color.White,
-                    style = SP16
+    ) { innerTextField ->
+        Row(
+            modifier = Modifier.background(MaterialTheme.colorScheme.primary, CircleShape),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = {},
+                enabled = false
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_search_line_24),
+                    tint = Color.White,
+                    contentDescription = stringResource(R.string.placeholder_search)
                 )
-            },
-            trailingIcon = {
-                if (query.isNotEmpty()) {
-                    IconButton(onClick = {
-                        query = ""
-                        onRemoveQuery()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Close,
-                            tint = Color.White,
-                            contentDescription = stringResource(R.string.placeholder_clear_text)
-                        )
-                    }
-                } else {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_search_line_24),
-                        tint = Color.White,
-                        contentDescription = stringResource(R.string.placeholder_search)
+            }
+            Box {
+                innerTextField()
+                if (query.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.placeholder_search),
+                        color = accordion,
+                        style = SP16
                     )
                 }
-            },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                disabledContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.White,
-                unfocusedIndicatorColor = Color.White,
-                disabledIndicatorColor = Color.White,
-            ),
-            interactionSource = interactionSource,
-            contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
-                top = 0.dp, bottom = 0.dp
-            )
-        )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            if (query.isNotEmpty()) {
+                IconButton(
+                    onClick = {
+                        query = ""
+                        onRemoveQuery()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        tint = Color.White,
+                        contentDescription = stringResource(R.string.placeholder_clear_text)
+                    )
+                }
+            }
+        }
     }
 }

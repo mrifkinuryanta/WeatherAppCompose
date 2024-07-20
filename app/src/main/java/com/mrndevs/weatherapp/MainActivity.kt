@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mrndevs.weatherapp.navigation.NavigationHost
 import com.mrndevs.weatherapp.ui.screen.weather.WeatherViewModel
@@ -24,6 +26,10 @@ class MainActivity : ComponentActivity() {
             viewModel.getSettings()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val themeState = ThemeState(isDarkTheme = uiState.settings?.isDarkTheme == true)
+
+            val isDark = themeState.isDarkTheme
+            val color: Int = if (isDark) R.color.primary_dark else R.color.primary_light
+            LocalView.current.setBackgroundColor(LocalContext.current.getColor(color))
 
             CompositionLocalProvider(LocalTheme provides themeState) {
                 WeatherAppTheme {
